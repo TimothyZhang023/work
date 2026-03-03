@@ -47,6 +47,21 @@ export async function deleteConversation(id: string) {
   });
 }
 
+export async function updateConversation(id: string, title: string) {
+  return request(`/api/conversations/${id}`, {
+    method: 'PUT',
+    data: { title },
+  });
+}
+
+export async function regenerateMessage(conversationId: string, model: string) {
+  return request(`/api/conversations/${conversationId}/regenerate`, {
+    method: 'POST',
+    data: { model },
+  });
+}
+
+
 export async function getMessages(conversationId: string) {
   return request<API.Message[]>(`/api/conversations/${conversationId}/messages`, {
     method: 'GET',

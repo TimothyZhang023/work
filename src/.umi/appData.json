@@ -18,6 +18,7 @@
     "dependencies": {
       "@ant-design/icons": "^5.0.1",
       "@ant-design/pro-components": "^2.4.4",
+      "@types/react-syntax-highlighter": "^15.5.13",
       "@umijs/max": "^4.0.0",
       "antd": "^5.4.0",
       "better-sqlite3": "^12.6.2",
@@ -29,7 +30,11 @@
       "react": "^18.2.0",
       "react-dom": "^18.2.0",
       "react-markdown": "^8.0.7",
-      "remark-gfm": "^3.0.1"
+      "react-syntax-highlighter": "^16.1.1",
+      "rehype-katex": "^7.0.1",
+      "rehype-raw": "^7.0.0",
+      "remark-gfm": "^3.0.1",
+      "remark-math": "^6.0.0"
     },
     "devDependencies": {
       "@types/react": "^18.0.28",
@@ -127,6 +132,9 @@
       "time": {
         "hooks": {
           "modifyRoutes": [
+            0,
+            0,
+            0,
             0
           ]
         },
@@ -146,7 +154,14 @@
           "onDevCompileDone": [
             46,
             3,
-            4
+            4,
+            6,
+            5,
+            5,
+            3,
+            5,
+            3,
+            10
           ]
         },
         "register": 2
@@ -166,7 +181,10 @@
             18
           ],
           "onGenerateFiles": [
-            3
+            3,
+            10,
+            10,
+            8
           ]
         },
         "register": 25
@@ -183,6 +201,9 @@
       "time": {
         "hooks": {
           "addEntryCode": [
+            0,
+            0,
+            0,
             0
           ]
         },
@@ -208,9 +229,14 @@
           "onPrepareBuildSuccess": [
             0,
             0,
+            0,
+            0,
             0
           ],
           "onCheckCode": [
+            0,
+            0,
+            0,
             0,
             0,
             0,
@@ -1252,6 +1278,14 @@
             0,
             0,
             0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0
           ]
         },
@@ -1269,9 +1303,15 @@
       "time": {
         "hooks": {
           "onGenerateFiles": [
-            2
+            2,
+            2,
+            2,
+            1
           ],
           "addRuntimePlugin": [
+            0,
+            0,
+            0,
             0
           ]
         },
@@ -1346,9 +1386,18 @@
       "time": {
         "hooks": {
           "onGenerateFiles": [
+            0,
+            0,
+            0,
             0
           ],
           "addEntryImports": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0,
             0
           ]
@@ -1383,9 +1432,18 @@
             1
           ],
           "onGenerateFiles": [
-            93
+            93,
+            53,
+            65,
+            61
           ],
           "addPolyfillImports": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0,
             0
           ]
@@ -1404,6 +1462,12 @@
         "hooks": {
           "addPolyfillImports": [
             0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
             0
           ]
         },
@@ -1421,7 +1485,10 @@
       "time": {
         "hooks": {
           "onGenerateFiles": [
-            104
+            104,
+            0,
+            0,
+            0
           ]
         },
         "register": 3
@@ -1464,6 +1531,9 @@
       "time": {
         "hooks": {
           "onGenerateFiles": [
+            1,
+            0,
+            1,
             1
           ],
           "addBeforeMiddlewares": [
@@ -1485,7 +1555,13 @@
         "hooks": {
           "onGenerateFiles": [
             17,
-            10
+            10,
+            13,
+            13,
+            19,
+            11,
+            16,
+            11
           ]
         },
         "register": 8
@@ -1540,7 +1616,10 @@
       "time": {
         "hooks": {
           "onGenerateFiles": [
-            446
+            446,
+            13,
+            30,
+            13
           ]
         },
         "register": 4
@@ -1625,6 +1704,9 @@
       "time": {
         "hooks": {
           "onGenerateFiles": [
+            2,
+            2,
+            2,
             2
           ]
         },
@@ -1759,6 +1841,14 @@
         "hooks": {
           "addHTMLHeadScripts": [
             41,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0,
             0,
             0,
@@ -2125,10 +2215,16 @@
       "time": {
         "hooks": {
           "addRuntimePlugin": [
+            0,
+            0,
+            0,
             0
           ],
           "onGenerateFiles": [
-            3
+            3,
+            2,
+            2,
+            2
           ],
           "addTmpGenerateWatcherPaths": [
             0
@@ -2172,16 +2268,31 @@
           ],
           "addEntryImportsAhead": [
             0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0
           ],
           "addRuntimePlugin": [
+            0,
+            0,
+            0,
             0
           ],
           "addRuntimePluginKey": [
+            0,
+            0,
+            0,
             0
           ],
           "onGenerateFiles": [
-            4
+            4,
+            2,
+            3,
+            2
           ],
           "addExtraBabelPlugins": [
             0
@@ -2216,16 +2327,28 @@
       "time": {
         "hooks": {
           "addRuntimePlugin": [
+            0,
+            0,
+            0,
             0
           ],
           "addRuntimePluginKey": [
+            0,
+            0,
+            0,
             0
           ],
           "onGenerateFiles": [
-            2
+            2,
+            1,
+            2,
+            1
           ],
           "addExtraModels": [
-            1
+            1,
+            0,
+            0,
+            0
           ]
         },
         "register": 1
@@ -2247,18 +2370,30 @@
             0
           ],
           "addLayouts": [
-            1
+            1,
+            0,
+            0,
+            0
           ],
           "modifyAppData": [
             0
           ],
           "addRuntimePlugin": [
+            0,
+            0,
+            0,
             0
           ],
           "addRuntimePluginKey": [
+            0,
+            0,
+            0,
             0
           ],
           "onGenerateFiles": [
+            7,
+            4,
+            9,
             7
           ]
         },
@@ -2302,10 +2437,16 @@
       "time": {
         "hooks": {
           "addRuntimePlugin": [
-            1
+            1,
+            0,
+            0,
+            0
           ],
           "onGenerateFiles": [
-            27
+            27,
+            21,
+            30,
+            33
           ],
           "addTmpGenerateWatcherPaths": [
             0
@@ -2338,6 +2479,9 @@
       "time": {
         "hooks": {
           "addRuntimePluginKey": [
+            0,
+            0,
+            0,
             0
           ]
         },
@@ -2392,10 +2536,16 @@
       "time": {
         "hooks": {
           "addRuntimePluginKey": [
+            0,
+            0,
+            0,
             0
           ],
           "onGenerateFiles": [
-            4
+            4,
+            2,
+            3,
+            3
           ]
         },
         "register": 1
@@ -2425,6 +2575,12 @@
       "time": {
         "hooks": {
           "addEntryImports": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
             0,
             0
           ],
@@ -2493,6 +2649,7 @@
       "time": {
         "hooks": {
           "onCheckPkgJSON": [
+            0,
             0
           ]
         },
@@ -3553,7 +3710,7 @@
       "file": "@/pages/Login/index.tsx",
       "id": "2",
       "absPath": "/login",
-      "__content": "import { LoginForm, ProFormText } from '@ant-design/pro-components';\nimport { LockOutlined, UserOutlined } from '@ant-design/icons';\nimport { message, Tabs } from 'antd';\nimport { useState } from 'react';\nimport { useModel } from '@umijs/max';\nimport { login, register } from '@/services/api';\n\nexport default () => {\n  const [type, setType] = useState<string>('login');\n  const { login: loginModel } = useModel('global');\n\n  const handleSubmit = async (values: API.LoginParams & { confirmPassword?: string }) => {\n    try {\n      if (type === 'register') {\n        if (values.password !== values.confirmPassword) {\n          message.error('两次输入的密码不一致');\n          return;\n        }\n        const res = await register(values);\n        if (res.token) {\n          message.success('注册成功');\n          loginModel(res.user, res.token);\n        }\n      } else {\n        const res = await login(values);\n        if (res.token) {\n          message.success('登录成功');\n          loginModel(res.user, res.token);\n        }\n      }\n    } catch (error: any) {\n      // Error handling is typically done in request interceptor, but we can handle specific logic here\n      console.error(error);\n    }\n  };\n\n  return (\n    <div style={{ backgroundColor: '#f0f4f9', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>\n      <LoginForm\n        logo={null}\n        title=\"Gemini Chat\"\n        subTitle=\"A Gemini-style AI chat application\"\n        submitter={{\n          searchConfig: {\n            submitText: type === 'login' ? '登录' : '注册',\n          },\n        }}\n        onFinish={async (values) => {\n          await handleSubmit(values as any);\n        }}\n      >\n        <Tabs\n          activeKey={type}\n          onChange={setType}\n          centered\n          items={[\n            {\n              key: 'login',\n              label: '账号登录',\n            },\n            {\n              key: 'register',\n              label: '账号注册',\n            },\n          ]}\n        />\n\n        <ProFormText\n          name=\"username\"\n          fieldProps={{\n            size: 'large',\n            prefix: <UserOutlined className={'prefixIcon'} />,\n          }}\n          placeholder={'用户名'}\n          rules={[\n            {\n              required: true,\n              message: '请输入用户名!',\n            },\n          ]}\n        />\n        <ProFormText.Password\n          name=\"password\"\n          fieldProps={{\n            size: 'large',\n            prefix: <LockOutlined className={'prefixIcon'} />,\n          }}\n          placeholder={'密码'}\n          rules={[\n            {\n              required: true,\n              message: '请输入密码！',\n            },\n          ]}\n        />\n\n        {type === 'register' && (\n          <ProFormText.Password\n            name=\"confirmPassword\"\n            fieldProps={{\n              size: 'large',\n              prefix: <LockOutlined className={'prefixIcon'} />,\n            }}\n            placeholder={'确认密码'}\n            rules={[\n              {\n                required: true,\n                message: '请确认密码！',\n              },\n            ]}\n          />\n        )}\n      </LoginForm>\n    </div>\n  );\n};\n",
+      "__content": "import { LoginForm, ProFormText } from '@ant-design/pro-components';\nimport { LockOutlined, UserOutlined } from '@ant-design/icons';\nimport { message, Tabs } from 'antd';\nimport { useState } from 'react';\nimport { useModel } from '@umijs/max';\nimport { login, register } from '@/services/api';\n\nexport default () => {\n  const [type, setType] = useState<string>('login');\n  const { login: loginModel } = useModel('global');\n\n  const handleSubmit = async (values: API.LoginParams & { confirmPassword?: string }) => {\n    try {\n      if (type === 'register') {\n        if (values.password !== values.confirmPassword) {\n          message.error('两次输入的密码不一致');\n          return;\n        }\n        const res = await register(values);\n        if (res.token) {\n          message.success('注册成功');\n          loginModel(res.user, res.token);\n        }\n      } else {\n        const res = await login(values);\n        if (res.token) {\n          message.success('登录成功');\n          loginModel(res.user, res.token);\n        }\n      }\n    } catch (error: any) {\n      const msg =\n        error?.response?.data?.error ||\n        error?.data?.error ||\n        error?.message ||\n        (type === 'login' ? '登录失败，请检查用户名或密码' : '注册失败，请稍后重试');\n      message.error(msg);\n    }\n  };\n\n  return (\n    <div style={{ backgroundColor: '#f0f4f9', height: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>\n      <LoginForm\n        logo={null}\n        title=\"Gemini Chat\"\n        subTitle=\"A Gemini-style AI chat application\"\n        submitter={{\n          searchConfig: {\n            submitText: type === 'login' ? '登录' : '注册',\n          },\n        }}\n        onFinish={async (values) => {\n          await handleSubmit(values as any);\n        }}\n      >\n        <Tabs\n          activeKey={type}\n          onChange={setType}\n          centered\n          items={[\n            {\n              key: 'login',\n              label: '账号登录',\n            },\n            {\n              key: 'register',\n              label: '账号注册',\n            },\n          ]}\n        />\n\n        <ProFormText\n          name=\"username\"\n          fieldProps={{\n            size: 'large',\n            prefix: <UserOutlined className={'prefixIcon'} />,\n          }}\n          placeholder={'用户名'}\n          rules={[\n            {\n              required: true,\n              message: '请输入用户名!',\n            },\n          ]}\n        />\n        <ProFormText.Password\n          name=\"password\"\n          fieldProps={{\n            size: 'large',\n            prefix: <LockOutlined className={'prefixIcon'} />,\n          }}\n          placeholder={'密码'}\n          rules={[\n            {\n              required: true,\n              message: '请输入密码！',\n            },\n          ]}\n        />\n\n        {type === 'register' && (\n          <ProFormText.Password\n            name=\"confirmPassword\"\n            fieldProps={{\n              size: 'large',\n              prefix: <LockOutlined className={'prefixIcon'} />,\n            }}\n            placeholder={'确认密码'}\n            rules={[\n              {\n                required: true,\n                message: '请确认密码！',\n              },\n            ]}\n          />\n        )}\n      </LoginForm>\n    </div>\n  );\n};\n",
       "__isJSFile": true,
       "__absFile": "C:/Users/ZTS/Desktop/dev/timo/src/pages/Login/index.tsx"
     },
@@ -3564,7 +3721,7 @@
       "file": "@/pages/Chat/index.tsx",
       "id": "3",
       "absPath": "/chat",
-      "__content": "import { useState, useEffect, useRef } from 'react';\nimport { Layout, Button, Input, Select, Avatar, Empty, Popconfirm, message as antdMessage } from 'antd';\nimport { PlusOutlined, DeleteOutlined, SettingOutlined, LogoutOutlined, UserOutlined, SendOutlined } from '@ant-design/icons';\nimport { useModel, history } from '@umijs/max';\nimport ReactMarkdown from 'react-markdown';\nimport remarkGfm from 'remark-gfm';\nimport { SettingsModal } from '@/components/SettingsModal';\nimport {\n  getConversations,\n  createConversation,\n  deleteConversation,\n  getMessages,\n  getAvailableModels,\n} from '@/services/api';\nimport './index.css';\n\nconst { Sider, Content } = Layout;\n\nexport default () => {\n  const { currentUser, logout, isLoggedIn } = useModel('global');\n  const [conversations, setConversations] = useState<API.Conversation[]>([]);\n  const [currentConvId, setCurrentConvId] = useState<string | null>(null);\n  const [messages, setMessages] = useState<API.Message[]>([]);\n  const [inputText, setInputText] = useState('');\n  const [models, setModels] = useState<API.Model[]>([]);\n  const [selectedModel, setSelectedModel] = useState<string>('');\n  const [loading, setLoading] = useState(false);\n  const [showSettings, setShowSettings] = useState(false);\n\n  const messagesEndRef = useRef<HTMLDivElement>(null);\n\n  // Initial Data Load\n  useEffect(() => {\n    if (!isLoggedIn) {\n      history.push('/login');\n      return;\n    }\n    loadInitData();\n  }, [isLoggedIn]);\n\n  const loadInitData = async () => {\n    try {\n      const [convs, availableModels] = await Promise.all([\n        getConversations(),\n        getAvailableModels(),\n      ]);\n      setConversations(convs);\n      setModels(availableModels);\n      if (availableModels.length > 0) {\n        setSelectedModel(availableModels[0].model_id);\n      }\n      if (convs.length > 0) {\n        handleSelectConversation(convs[0].id);\n      }\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const scrollToBottom = () => {\n    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });\n  };\n\n  useEffect(() => {\n    scrollToBottom();\n  }, [messages]);\n\n  const handleCreateChat = async () => {\n    try {\n      const newConv = await createConversation('新对话');\n      setConversations([newConv, ...conversations]);\n      handleSelectConversation(newConv.id);\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const handleSelectConversation = async (id: string) => {\n    setCurrentConvId(id);\n    try {\n      const msgs = await getMessages(id);\n      setMessages(msgs);\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {\n    e.stopPropagation();\n    try {\n      await deleteConversation(id);\n      const newConvs = conversations.filter(c => c.id !== id);\n      setConversations(newConvs);\n      if (currentConvId === id) {\n        if (newConvs.length > 0) {\n          handleSelectConversation(newConvs[0].id);\n        } else {\n          setCurrentConvId(null);\n          setMessages([]);\n        }\n      }\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const sendMessage = async () => {\n    if (!inputText.trim() || loading) return;\n\n    let convId = currentConvId;\n    if (!convId) {\n      const newConv = await createConversation('新对话');\n      setConversations([newConv, ...conversations]);\n      convId = newConv.id;\n      setCurrentConvId(convId);\n    }\n\n    const newMessage: API.Message = { role: 'user', content: inputText };\n    setMessages(prev => [...prev, newMessage]);\n    setInputText('');\n    setLoading(true);\n\n    try {\n      // Setup SSE\n      const token = localStorage.getItem('token');\n      const response = await fetch(`/api/conversations/${convId}/chat`, {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n          'Authorization': `Bearer ${token}`\n        },\n        body: JSON.stringify({\n          message: newMessage.content,\n          model: selectedModel\n        })\n      });\n\n      if (!response.ok) throw new Error('Network response was not ok');\n\n      const reader = response.body?.getReader();\n      const decoder = new TextDecoder();\n\n      // Add empty assistant message\n      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);\n\n      while (reader) {\n        const { done, value } = await reader.read();\n        if (done) break;\n\n        const chunk = decoder.decode(value);\n        const lines = chunk.split('\\n').filter(line => line.startsWith('data: '));\n\n        for (const line of lines) {\n          const data = line.slice(6);\n          if (data === '[DONE]') continue;\n\n          try {\n            const parsed = JSON.parse(data);\n             // Update messages state functionaly to avoid closure stale state\n             setMessages(prev => {\n                const newMessages = [...prev];\n                const lastMsg = newMessages[newMessages.length - 1];\n\n                if (lastMsg.role === 'assistant') {\n                    if (parsed.content) {\n                        lastMsg.content += parsed.content;\n                    }\n                    if (parsed.error) {\n                        lastMsg.content = `Error: ${parsed.error}`;\n                    }\n                }\n                return newMessages;\n             });\n\n             if (parsed.title) {\n                 setConversations(prev => prev.map(c =>\n                     c.id === convId ? { ...c, title: parsed.title } : c\n                 ));\n             }\n\n          } catch (e) {\n            console.error('Parse error', e);\n          }\n        }\n      }\n\n    } catch (error) {\n      console.error(error);\n      antdMessage.error('Failed to send message');\n    } finally {\n      setLoading(false);\n    }\n  };\n\n  return (\n    <Layout style={{ height: '100vh', overflow: 'hidden' }}>\n      <Sider width={260} theme=\"light\" style={{ borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column' }}>\n        <div style={{ padding: '16px', display: 'flex', flexDirection: 'column', height: '100%' }}>\n          <Button\n            type=\"text\"\n            icon={<PlusOutlined />}\n            onClick={handleCreateChat}\n            style={{\n              marginBottom: 16,\n              background: '#f3f4f6',\n              borderRadius: '9999px',\n              height: '48px',\n              justifyContent: 'flex-start',\n              paddingLeft: '20px'\n            }}\n          >\n            发起新对话\n          </Button>\n\n          <div style={{ flex: 1, overflowY: 'auto' }}>\n            <div style={{ padding: '0 12px', marginBottom: 8, fontSize: 12, color: '#6b7280', fontWeight: 500 }}>对话</div>\n            {conversations.map(conv => (\n              <div\n                key={conv.id}\n                className={`conversation-item ${currentConvId === conv.id ? 'active' : ''}`}\n                onClick={() => handleSelectConversation(conv.id)}\n              >\n                <span className=\"truncate\">{conv.title}</span>\n                <Popconfirm\n                  title=\"删除对话\"\n                  description=\"确定要删除这个对话吗？\"\n                  onConfirm={(e) => handleDeleteConversation(conv.id, e as any)}\n                  onCancel={(e) => e?.stopPropagation()}\n                >\n                  <Button\n                    type=\"text\"\n                    size=\"small\"\n                    icon={<DeleteOutlined />}\n                    className=\"delete-btn\"\n                    onClick={(e) => e.stopPropagation()}\n                  />\n                </Popconfirm>\n              </div>\n            ))}\n            {conversations.length === 0 && (\n               <div style={{ textAlign: 'center', color: '#9ca3af', marginTop: 20, fontSize: 14 }}>暂无对话记录</div>\n            )}\n          </div>\n\n          <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: 16 }}>\n            <Button block icon={<SettingOutlined />} onClick={() => setShowSettings(true)} style={{ marginBottom: 8, textAlign: 'left' }}>设置</Button>\n            <Button block icon={<LogoutOutlined />} onClick={logout} style={{ textAlign: 'left' }}>退出登录</Button>\n          </div>\n        </div>\n      </Sider>\n\n      <Layout>\n        <Content style={{ display: 'flex', flexDirection: 'column', background: 'white' }}>\n          {/* Header */}\n          <div style={{ padding: '12px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>\n             <span style={{ fontSize: 20, color: '#041e49' }}>Gemini</span>\n             <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>\n                 <span style={{ fontSize: 14, color: '#4b5563' }}>{currentUser?.username}</span>\n                 <Avatar style={{ backgroundColor: '#2563eb' }} icon={<UserOutlined />} >{currentUser?.username?.[0]?.toUpperCase()}</Avatar>\n             </div>\n          </div>\n\n          {/* Messages */}\n          <div style={{ flex: 1, overflowY: 'auto', padding: '24px 15%' }}>\n             {messages.length === 0 ? (\n                 <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9ca3af' }}>\n                     开始新对话...\n                 </div>\n             ) : (\n                 messages.map((msg, idx) => (\n                     <div key={idx} style={{ marginBottom: 24, display: 'flex', justifyContent: msg.role === 'user' ? 'flex-end' : 'flex-start' }}>\n                         <div className={`message-bubble ${msg.role}`}>\n                             {msg.role === 'user' ? (\n                                 msg.content\n                             ) : (\n                                 <ReactMarkdown remarkPlugins={[remarkGfm]} className=\"prose\">\n                                     {msg.content}\n                                 </ReactMarkdown>\n                             )}\n                         </div>\n                     </div>\n                 ))\n             )}\n             <div ref={messagesEndRef} />\n          </div>\n\n          {/* Input Area */}\n          <div style={{ padding: '16px 15%', paddingBottom: 24 }}>\n             <div className=\"input-container\">\n                 <Input\n                    value={inputText}\n                    onChange={e => setInputText(e.target.value)}\n                    onPressEnter={sendMessage}\n                    placeholder=\"问问 Gemini\"\n                    bordered={false}\n                    disabled={loading}\n                    style={{ flex: 1, fontSize: 16 }}\n                 />\n                 <Select\n                    value={selectedModel}\n                    onChange={setSelectedModel}\n                    options={models.map(m => ({ label: m.display_name, value: m.model_id }))}\n                    bordered={false}\n                    style={{ width: 120 }}\n                    disabled={loading}\n                 />\n                 <Button\n                    type=\"primary\"\n                    shape=\"circle\"\n                    icon={<SendOutlined />}\n                    disabled={loading || !inputText.trim()}\n                    onClick={sendMessage}\n                 />\n             </div>\n             <div style={{ textAlign: 'center', color: '#6b7280', fontSize: 12, marginTop: 12 }}>\n                 Gemini 是一款 AI 工具，其回答未必正确无误。\n             </div>\n          </div>\n        </Content>\n      </Layout>\n\n      <SettingsModal open={showSettings} onOpenChange={setShowSettings} />\n    </Layout>\n  );\n};\n",
+      "__content": "import { useState, useEffect, useRef, useCallback } from 'react';\nimport {\n  Layout, Button, Input, Select, Avatar, Popconfirm,\n  message as antdMessage, Drawer, Upload, Tooltip, ConfigProvider, theme as antdTheme,\n} from 'antd';\nimport {\n  PlusOutlined, DeleteOutlined, SettingOutlined, LogoutOutlined,\n  UserOutlined, SendOutlined, StopOutlined, ReloadOutlined,\n  CopyOutlined, SunOutlined, MoonOutlined, MenuOutlined,\n  PictureOutlined, EditOutlined, CheckOutlined, CloseOutlined,\n} from '@ant-design/icons';\nimport { useModel, history } from '@umijs/max';\nimport { SettingsModal } from '@/components/SettingsModal';\nimport { MarkdownRenderer } from '@/components/MarkdownRenderer';\nimport {\n  getConversations,\n  createConversation,\n  deleteConversation,\n  getMessages,\n  getAvailableModels,\n  updateConversation,\n} from '@/services/api';\nimport './index.css';\n\nconst { Sider, Content } = Layout;\n\n// 从 localStorage 获取/保存主题\nconst getStoredTheme = (): 'light' | 'dark' => {\n  const saved = localStorage.getItem('timo-theme');\n  if (saved === 'dark' || saved === 'light') return saved;\n  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';\n};\n\n// 将图片文件转为 base64\nconst fileToBase64 = (file: File): Promise<string> =>\n  new Promise((resolve, reject) => {\n    const reader = new FileReader();\n    reader.readAsDataURL(file);\n    reader.onload = () => {\n      const result = reader.result as string;\n      // 只保留 base64 数据部分\n      resolve(result.split(',')[1]);\n    };\n    reader.onerror = reject;\n  });\n\n// 从存储内容中提取显示文本（去掉图片数据）\nconst extractDisplayContent = (content: string): string => {\n  return content.replace(/\\[IMAGE_DATA:[^\\]]+\\]/g, '[📷 图片]');\n};\n\n// 检查消息是否包含图片\nconst hasImage = (content: string): boolean => content.includes('[IMAGE_DATA:');\n\nexport default () => {\n  const { currentUser, logout, isLoggedIn } = useModel('global');\n\n  // UI 状态\n  const [theme, setTheme] = useState<'light' | 'dark'>(getStoredTheme);\n  const [siderVisible, setSiderVisible] = useState(false); // mobile drawer\n  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);\n  const isDark = theme === 'dark';\n\n  // 对话状态\n  const [conversations, setConversations] = useState<API.Conversation[]>([]);\n  const [currentConvId, setCurrentConvId] = useState<string | null>(null);\n  const [messages, setMessages] = useState<API.Message[]>([]);\n  const [models, setModels] = useState<API.Model[]>([]);\n  const [selectedModel, setSelectedModel] = useState<string>('');\n\n  // 输入状态\n  const [inputText, setInputText] = useState('');\n  const [pendingImages, setPendingImages] = useState<{ file: File; preview: string }[]>([]);\n\n  // 流式处理状态\n  const [loading, setLoading] = useState(false);\n  const abortControllerRef = useRef<AbortController | null>(null);\n\n  // 设置弹窗\n  const [showSettings, setShowSettings] = useState(false);\n\n  // 对话重命名状态\n  const [editingTitleId, setEditingTitleId] = useState<string | null>(null);\n  const [editingTitle, setEditingTitle] = useState('');\n\n  const messagesEndRef = useRef<HTMLDivElement>(null);\n  const inputRef = useRef<HTMLInputElement>(null);\n\n  // 响应式监听\n  useEffect(() => {\n    const handler = () => setIsMobile(window.innerWidth < 768);\n    window.addEventListener('resize', handler);\n    return () => window.removeEventListener('resize', handler);\n  }, []);\n\n  // 主题持久化\n  useEffect(() => {\n    document.documentElement.setAttribute('data-theme', theme);\n    localStorage.setItem('timo-theme', theme);\n  }, [theme]);\n\n  // 登录检查 & 初始化\n  useEffect(() => {\n    if (!isLoggedIn) {\n      history.push('/login');\n      return;\n    }\n    loadInitData();\n  }, [isLoggedIn]);\n\n  // 键盘快捷键\n  useEffect(() => {\n    const handler = (e: KeyboardEvent) => {\n      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {\n        e.preventDefault();\n        handleCreateChat();\n      }\n    };\n    window.addEventListener('keydown', handler);\n    return () => window.removeEventListener('keydown', handler);\n  }, [conversations]);\n\n  const loadInitData = async () => {\n    try {\n      const [convs, availableModels] = await Promise.all([\n        getConversations(),\n        getAvailableModels(),\n      ]);\n      setConversations(convs);\n      setModels(availableModels);\n      if (availableModels.length > 0) setSelectedModel(availableModels[0].model_id);\n      if (convs.length > 0) handleSelectConversation(convs[0].id);\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const scrollToBottom = useCallback(() => {\n    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });\n  }, []);\n\n  useEffect(() => {\n    scrollToBottom();\n  }, [messages]);\n\n  const handleCreateChat = async () => {\n    try {\n      const newConv = await createConversation('新对话');\n      setConversations(prev => [newConv, ...prev]);\n      setCurrentConvId(newConv.id);\n      setMessages([]);\n      if (isMobile) setSiderVisible(false);\n      setTimeout(() => inputRef.current?.focus(), 100);\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const handleSelectConversation = async (id: string) => {\n    setCurrentConvId(id);\n    try {\n      const msgs = await getMessages(id);\n      setMessages(msgs);\n    } catch (error) {\n      console.error(error);\n    }\n    if (isMobile) setSiderVisible(false);\n  };\n\n  const handleDeleteConversation = async (id: string, e: React.MouseEvent) => {\n    e.stopPropagation();\n    try {\n      await deleteConversation(id);\n      const newConvs = conversations.filter(c => c.id !== id);\n      setConversations(newConvs);\n      if (currentConvId === id) {\n        if (newConvs.length > 0) {\n          handleSelectConversation(newConvs[0].id);\n        } else {\n          setCurrentConvId(null);\n          setMessages([]);\n        }\n      }\n    } catch (error) {\n      console.error(error);\n    }\n  };\n\n  const handleRenameStart = (conv: API.Conversation, e: React.MouseEvent) => {\n    e.stopPropagation();\n    setEditingTitleId(conv.id);\n    setEditingTitle(conv.title);\n  };\n\n  const handleRenameConfirm = async () => {\n    if (!editingTitleId || !editingTitle.trim()) {\n      setEditingTitleId(null);\n      return;\n    }\n    try {\n      await updateConversation(editingTitleId, editingTitle.trim());\n      setConversations(prev =>\n        prev.map(c => c.id === editingTitleId ? { ...c, title: editingTitle.trim() } : c)\n      );\n    } catch (e) {\n      console.error(e);\n    }\n    setEditingTitleId(null);\n  };\n\n  // 核心发送函数（兼容 send + regenerate）\n  const streamChat = async (convId: string, userMsg: API.Message | null, isRegenerate = false) => {\n    setLoading(true);\n    const controller = new AbortController();\n    abortControllerRef.current = controller;\n\n    try {\n      const token = localStorage.getItem('token');\n      const url = isRegenerate\n        ? `/api/conversations/${convId}/regenerate`\n        : `/api/conversations/${convId}/chat`;\n\n      let body: any = { model: selectedModel };\n      if (!isRegenerate && userMsg) {\n        body.message = userMsg.content.replace(/\\[IMAGE_DATA:[^\\]]+\\]/g, '').trim() || userMsg.content;\n        // 提取图片 base64\n        const imgMatches = [...userMsg.content.matchAll(/\\[IMAGE_DATA:([^\\]]+)\\]/g)];\n        if (imgMatches.length > 0) {\n          body.images = imgMatches.map(m => m[1]);\n          body.message = userMsg.content.replace(/\\[IMAGE_DATA:[^\\]]+\\]/g, '').trim();\n        }\n      }\n\n      const response = await fetch(url, {\n        method: 'POST',\n        headers: {\n          'Content-Type': 'application/json',\n          Authorization: `Bearer ${token}`,\n        },\n        body: JSON.stringify(body),\n        signal: controller.signal,\n      });\n\n      if (!response.ok) throw new Error('Network response was not ok');\n\n      const reader = response.body?.getReader();\n      const decoder = new TextDecoder();\n\n      // 添加空 assistant 消息占位\n      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);\n\n      while (reader) {\n        const { done, value } = await reader.read();\n        if (done) break;\n\n        const chunk = decoder.decode(value);\n        const lines = chunk.split('\\n').filter(line => line.startsWith('data: '));\n\n        for (const line of lines) {\n          const data = line.slice(6);\n          if (data === '[DONE]') continue;\n          try {\n            const parsed = JSON.parse(data);\n            setMessages(prev => {\n              const newMessages = [...prev];\n              const lastMsg = newMessages[newMessages.length - 1];\n              if (lastMsg.role === 'assistant') {\n                if (parsed.content) lastMsg.content += parsed.content;\n                if (parsed.error) lastMsg.content = `❌ 错误：${parsed.error}`;\n              }\n              return newMessages;\n            });\n            if (parsed.title) {\n              setConversations(prev =>\n                prev.map(c => c.id === convId ? { ...c, title: parsed.title } : c)\n              );\n            }\n          } catch (e) {\n            // ignore parse errors\n          }\n        }\n      }\n    } catch (error: any) {\n      if (error.name !== 'AbortError') {\n        antdMessage.error('发送失败，请检查网络和 API 配置');\n        console.error(error);\n      }\n    } finally {\n      setLoading(false);\n      abortControllerRef.current = null;\n    }\n  };\n\n  const sendMessage = async () => {\n    if ((!inputText.trim() && pendingImages.length === 0) || loading) return;\n\n    let convId = currentConvId;\n    if (!convId) {\n      const newConv = await createConversation('新对话');\n      setConversations(prev => [newConv, ...prev]);\n      convId = newConv.id;\n      setCurrentConvId(convId);\n    }\n\n    // 构建用户消息内容（文字 + 图片标记）\n    let content = inputText;\n    if (pendingImages.length > 0) {\n      const base64s = await Promise.all(pendingImages.map(p => fileToBase64(p.file)));\n      content += '\\n' + base64s.map(b => `[IMAGE_DATA:${b}]`).join('\\n');\n    }\n\n    const userMsg: API.Message = { role: 'user', content };\n    setMessages(prev => [...prev, userMsg]);\n    setInputText('');\n    setPendingImages([]);\n\n    await streamChat(convId, userMsg, false);\n  };\n\n  const handleRegenerate = async () => {\n    if (!currentConvId || loading) return;\n    // 删除界面上最后一条 assistant 消息\n    setMessages(prev => {\n      const newMsgs = [...prev];\n      if (newMsgs.length > 0 && newMsgs[newMsgs.length - 1].role === 'assistant') {\n        newMsgs.pop();\n      }\n      return newMsgs;\n    });\n    await streamChat(currentConvId, null, true);\n  };\n\n  const handleStop = () => {\n    abortControllerRef.current?.abort();\n  };\n\n  const handleCopyMessage = (content: string) => {\n    const displayContent = extractDisplayContent(content);\n    navigator.clipboard.writeText(displayContent);\n    antdMessage.success('已复制到剪贴板');\n  };\n\n  const handleImageAdd = (file: File) => {\n    const preview = URL.createObjectURL(file);\n    setPendingImages(prev => [...prev, { file, preview }]);\n    return false; // 阻止 antd Upload 自动上传\n  };\n\n  const handleImageRemove = (index: number) => {\n    setPendingImages(prev => prev.filter((_, i) => i !== index));\n  };\n\n  // Sidebar 内容\n  const siderContent = (\n    <div className={`sider-inner ${isDark ? 'dark' : ''}`}>\n      <div className=\"sider-top\">\n        <Button\n          type=\"text\"\n          icon={<PlusOutlined />}\n          onClick={handleCreateChat}\n          className=\"new-chat-btn\"\n          title=\"新对话 (Ctrl+N)\"\n        >\n          发起新对话\n        </Button>\n\n        <div className=\"conv-list\">\n          <div className=\"conv-list-label\">对话</div>\n          {conversations.map(conv => (\n            <div\n              key={conv.id}\n              className={`conversation-item ${currentConvId === conv.id ? 'active' : ''}`}\n              onClick={() => handleSelectConversation(conv.id)}\n            >\n              {editingTitleId === conv.id ? (\n                <div className=\"title-edit\" onClick={e => e.stopPropagation()}>\n                  <Input\n                    size=\"small\"\n                    value={editingTitle}\n                    onChange={e => setEditingTitle(e.target.value)}\n                    onPressEnter={handleRenameConfirm}\n                    autoFocus\n                  />\n                  <Button type=\"text\" size=\"small\" icon={<CheckOutlined />} onClick={handleRenameConfirm} />\n                  <Button type=\"text\" size=\"small\" icon={<CloseOutlined />} onClick={() => setEditingTitleId(null)} />\n                </div>\n              ) : (\n                <>\n                  <span className=\"conv-title\">{conv.title}</span>\n                  <div className=\"conv-actions\">\n                    <Button\n                      type=\"text\" size=\"small\" icon={<EditOutlined />}\n                      className=\"action-btn\"\n                      onClick={(e) => handleRenameStart(conv, e)}\n                    />\n                    <Popconfirm\n                      title=\"删除对话\" description=\"确定要删除这个对话吗？\"\n                      onConfirm={(e) => handleDeleteConversation(conv.id, e as any)}\n                      onCancel={(e) => (e as any)?.stopPropagation()}\n                    >\n                      <Button\n                        type=\"text\" size=\"small\" icon={<DeleteOutlined />}\n                        className=\"action-btn delete-btn\"\n                        onClick={e => e.stopPropagation()}\n                      />\n                    </Popconfirm>\n                  </div>\n                </>\n              )}\n            </div>\n          ))}\n          {conversations.length === 0 && (\n            <div className=\"empty-conv\">暂无对话记录</div>\n          )}\n        </div>\n      </div>\n\n      <div className=\"sider-bottom\">\n        <Button\n          block icon={isDark ? <SunOutlined /> : <MoonOutlined />}\n          onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}\n          className=\"sider-action-btn\"\n        >\n          {isDark ? '浅色模式' : '深色模式'}\n        </Button>\n        <Button\n          block icon={<SettingOutlined />}\n          onClick={() => setShowSettings(true)}\n          className=\"sider-action-btn\"\n        >\n          设置\n        </Button>\n        <Button\n          block icon={<LogoutOutlined />}\n          onClick={logout}\n          className=\"sider-action-btn\"\n          danger\n        >\n          退出登录\n        </Button>\n      </div>\n    </div>\n  );\n\n  const lastAssistantIdx = [...messages].map(m => m.role).lastIndexOf('assistant');\n\n  return (\n    <ConfigProvider\n      theme={{\n        algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,\n      }}\n    >\n      <Layout className={`chat-layout ${isDark ? 'dark' : ''}`}>\n        {/* Desktop Sider */}\n        {!isMobile && (\n          <Sider width={260} className=\"chat-sider\">\n            {siderContent}\n          </Sider>\n        )}\n\n        {/* Mobile Drawer */}\n        {isMobile && (\n          <Drawer\n            placement=\"left\"\n            open={siderVisible}\n            onClose={() => setSiderVisible(false)}\n            width={260}\n            styles={{ body: { padding: 0 } }}\n            title={null}\n          >\n            {siderContent}\n          </Drawer>\n        )}\n\n        <Layout>\n          <Content className=\"chat-content\">\n            {/* Header */}\n            <div className=\"chat-header\">\n              <div className=\"header-left\">\n                {isMobile && (\n                  <Button\n                    type=\"text\" icon={<MenuOutlined />}\n                    onClick={() => setSiderVisible(true)}\n                  />\n                )}\n                <span className=\"header-title\">Timo</span>\n              </div>\n              <div className=\"header-right\">\n                <span className=\"header-username\">{currentUser?.username}</span>\n                <Avatar style={{ backgroundColor: '#2563eb' }} icon={<UserOutlined />}>\n                  {currentUser?.username?.[0]?.toUpperCase()}\n                </Avatar>\n              </div>\n            </div>\n\n            {/* Messages */}\n            <div className=\"messages-area\">\n              {messages.length === 0 ? (\n                <div className=\"empty-messages\">\n                  <div className=\"empty-icon\">✨</div>\n                  <div className=\"empty-title\">有什么我可以帮你的？</div>\n                  <div className=\"empty-hint\">按 Ctrl+N 创建新对话</div>\n                </div>\n              ) : (\n                messages.map((msg, idx) => (\n                  <div\n                    key={idx}\n                    className={`message-row ${msg.role}`}\n                  >\n                    {msg.role === 'assistant' && (\n                      <Avatar className=\"msg-avatar assistant-avatar\" size={32}>AI</Avatar>\n                    )}\n                    <div className={`message-bubble ${msg.role}`}>\n                      {msg.role === 'user' ? (\n                        <div className=\"user-content\">\n                          {hasImage(msg.content) && (\n                            <div className=\"image-preview-row\">📷 图片</div>\n                          )}\n                          {extractDisplayContent(msg.content)}\n                        </div>\n                      ) : (\n                        <MarkdownRenderer content={msg.content} isDark={isDark} />\n                      )}\n                    </div>\n                    {/* Message Actions */}\n                    <div className={`msg-actions ${msg.role}`}>\n                      <Tooltip title=\"复制\">\n                        <Button\n                          type=\"text\" size=\"small\"\n                          icon={<CopyOutlined />}\n                          onClick={() => handleCopyMessage(msg.content)}\n                          className=\"msg-action-btn\"\n                        />\n                      </Tooltip>\n                      {msg.role === 'assistant' && idx === lastAssistantIdx && !loading && (\n                        <Tooltip title=\"重新生成\">\n                          <Button\n                            type=\"text\" size=\"small\"\n                            icon={<ReloadOutlined />}\n                            onClick={handleRegenerate}\n                            className=\"msg-action-btn\"\n                          />\n                        </Tooltip>\n                      )}\n                    </div>\n                  </div>\n                ))\n              )}\n              <div ref={messagesEndRef} />\n            </div>\n\n            {/* Input Area */}\n            <div className=\"input-area\">\n              {/* Pending Images Preview */}\n              {pendingImages.length > 0 && (\n                <div className=\"pending-images\">\n                  {pendingImages.map((img, i) => (\n                    <div key={i} className=\"pending-image-item\">\n                      <img src={img.preview} alt=\"upload\" />\n                      <Button\n                        type=\"text\" size=\"small\" danger\n                        icon={<CloseOutlined />}\n                        className=\"remove-image-btn\"\n                        onClick={() => handleImageRemove(i)}\n                      />\n                    </div>\n                  ))}\n                </div>\n              )}\n\n              <div className=\"input-container\">\n                <Tooltip title=\"上传图片\">\n                  <Upload\n                    accept=\"image/*\"\n                    showUploadList={false}\n                    beforeUpload={handleImageAdd}\n                    multiple\n                  >\n                    <Button\n                      type=\"text\"\n                      icon={<PictureOutlined />}\n                      className=\"input-action-btn\"\n                      disabled={loading}\n                    />\n                  </Upload>\n                </Tooltip>\n\n                <Input\n                  ref={inputRef as any}\n                  value={inputText}\n                  onChange={e => setInputText(e.target.value)}\n                  onPressEnter={e => {\n                    if (!e.shiftKey) {\n                      e.preventDefault();\n                      sendMessage();\n                    }\n                  }}\n                  placeholder=\"问问 Timo… (Shift+Enter 换行)\"\n                  bordered={false}\n                  disabled={loading}\n                  className=\"chat-input\"\n                />\n\n                <Select\n                  value={selectedModel}\n                  onChange={setSelectedModel}\n                  options={models.map(m => ({ label: m.display_name, value: m.model_id }))}\n                  bordered={false}\n                  style={{ minWidth: 120, maxWidth: 180 }}\n                  disabled={loading}\n                  placeholder=\"选择模型\"\n                />\n\n                {loading ? (\n                  <Tooltip title=\"停止生成\">\n                    <Button\n                      danger shape=\"circle\"\n                      icon={<StopOutlined />}\n                      onClick={handleStop}\n                      className=\"send-btn\"\n                    />\n                  </Tooltip>\n                ) : (\n                  <Button\n                    type=\"primary\" shape=\"circle\"\n                    icon={<SendOutlined />}\n                    disabled={!inputText.trim() && pendingImages.length === 0}\n                    onClick={sendMessage}\n                    className=\"send-btn\"\n                  />\n                )}\n              </div>\n              <div className=\"input-hint\">Timo 是一款 AI 工具，其回答未必正确无误。Shift+Enter 换行</div>\n            </div>\n          </Content>\n        </Layout>\n\n        <SettingsModal open={showSettings} onOpenChange={setShowSettings} />\n      </Layout>\n    </ConfigProvider>\n  );\n};\n",
       "__isJSFile": true,
       "__absFile": "C:/Users/ZTS/Desktop/dev/timo/src/pages/Chat/index.tsx"
     },
@@ -3597,7 +3754,9 @@
     ]
   },
   "mfsuBundleStatus": {
-    "done": true
+    "done": true,
+    "percent": 1,
+    "status": ""
   },
   "react": {
     "version": "18.3.1",
@@ -4793,7 +4952,7 @@
             "format": "esm"
           },
           "src/services/api.ts": {
-            "bytes": 2673,
+            "bytes": 3041,
             "imports": [
               {
                 "path": "src/.umi/exports.ts",
@@ -5327,8 +5486,74 @@
             ],
             "format": "esm"
           },
+          "src/components/MarkdownRenderer.tsx": {
+            "bytes": 3979,
+            "imports": [
+              {
+                "path": "react-markdown",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "remark-gfm",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "remark-math",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "rehype-katex",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "rehype-raw",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react-syntax-highlighter",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react-syntax-highlighter/dist/esm/styles/prism",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react-syntax-highlighter/dist/esm/styles/prism",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "@ant-design/icons",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "antd",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react/jsx-runtime",
+                "kind": "import-statement",
+                "external": true
+              }
+            ],
+            "format": "esm"
+          },
           "src/pages/Chat/index.tsx": {
-            "bytes": 11598,
+            "bytes": 22038,
             "imports": [
               {
                 "path": "react",
@@ -5351,19 +5576,14 @@
                 "original": "@umijs/max"
               },
               {
-                "path": "react-markdown",
-                "kind": "import-statement",
-                "external": true
-              },
-              {
-                "path": "remark-gfm",
-                "kind": "import-statement",
-                "external": true
-              },
-              {
                 "path": "src/components/SettingsModal.tsx",
                 "kind": "import-statement",
                 "original": "@/components/SettingsModal"
+              },
+              {
+                "path": "src/components/MarkdownRenderer.tsx",
+                "kind": "import-statement",
+                "original": "@/components/MarkdownRenderer"
               },
               {
                 "path": "src/services/api.ts",
@@ -5804,6 +6024,66 @@
                 "external": true
               },
               {
+                "path": "react-markdown",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "remark-gfm",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "remark-math",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "rehype-katex",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "rehype-raw",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react-syntax-highlighter",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react-syntax-highlighter/dist/esm/styles/prism",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react-syntax-highlighter/dist/esm/styles/prism",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "@ant-design/icons",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "antd",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
+                "path": "react/jsx-runtime",
+                "kind": "import-statement",
+                "external": true
+              },
+              {
                 "path": "react",
                 "kind": "import-statement",
                 "external": true
@@ -5815,16 +6095,6 @@
               },
               {
                 "path": "@ant-design/icons",
-                "kind": "import-statement",
-                "external": true
-              },
-              {
-                "path": "react-markdown",
-                "kind": "import-statement",
-                "external": true
-              },
-              {
-                "path": "remark-gfm",
                 "kind": "import-statement",
                 "external": true
               },
@@ -7010,7 +7280,7 @@
                 "bytesInOutput": 3175
               },
               "src/services/api.ts": {
-                "bytesInOutput": 1983
+                "bytesInOutput": 2124
               },
               "src/app.tsx": {
                 "bytesInOutput": 2401
@@ -7078,8 +7348,11 @@
               "src/components/SettingsModal.tsx": {
                 "bytesInOutput": 9324
               },
+              "src/components/MarkdownRenderer.tsx": {
+                "bytesInOutput": 3421
+              },
               "src/pages/Chat/index.tsx": {
-                "bytesInOutput": 13147
+                "bytesInOutput": 25753
               },
               "src/.umi/plugin-layout/Logo.tsx": {
                 "bytesInOutput": 5504
@@ -7103,7 +7376,7 @@
                 "bytesInOutput": 2061
               }
             },
-            "bytes": 101188
+            "bytes": 117396
           }
         }
       }
@@ -10630,6 +10903,167 @@
           "type": "ImportDeclaration"
         }
       ],
+      "C:\\Users\\ZTS\\Desktop\\dev\\timo\\src\\components\\MarkdownRenderer.tsx": [
+        {
+          "end": 44,
+          "importKind": "value",
+          "source": "react-markdown",
+          "specifiers": [
+            {
+              "local": "ReactMarkdown",
+              "type": "ImportDefaultSpecifier"
+            }
+          ],
+          "start": 1,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 81,
+          "importKind": "value",
+          "source": "remark-gfm",
+          "specifiers": [
+            {
+              "local": "remarkGfm",
+              "type": "ImportDefaultSpecifier"
+            }
+          ],
+          "start": 46,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 120,
+          "importKind": "value",
+          "source": "remark-math",
+          "specifiers": [
+            {
+              "local": "remarkMath",
+              "type": "ImportDefaultSpecifier"
+            }
+          ],
+          "start": 83,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 161,
+          "importKind": "value",
+          "source": "rehype-katex",
+          "specifiers": [
+            {
+              "local": "rehypeKatex",
+              "type": "ImportDefaultSpecifier"
+            }
+          ],
+          "start": 122,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 198,
+          "importKind": "value",
+          "source": "rehype-raw",
+          "specifiers": [
+            {
+              "local": "rehypeRaw",
+              "type": "ImportDefaultSpecifier"
+            }
+          ],
+          "start": 163,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 270,
+          "importKind": "value",
+          "source": "react-syntax-highlighter",
+          "specifiers": [
+            {
+              "imported": "Prism",
+              "local": "SyntaxHighlighter",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 200,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 345,
+          "importKind": "value",
+          "source": "react-syntax-highlighter/dist/esm/styles/prism",
+          "specifiers": [
+            {
+              "imported": "oneDark",
+              "local": "oneDark",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 272,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 421,
+          "importKind": "value",
+          "source": "react-syntax-highlighter/dist/esm/styles/prism",
+          "specifiers": [
+            {
+              "imported": "oneLight",
+              "local": "oneLight",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 347,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 456,
+          "importKind": "value",
+          "source": "react",
+          "specifiers": [
+            {
+              "imported": "useState",
+              "local": "useState",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 423,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 522,
+          "importKind": "value",
+          "source": "@ant-design/icons",
+          "specifiers": [
+            {
+              "imported": "CopyOutlined",
+              "local": "CopyOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "CheckOutlined",
+              "local": "CheckOutlined",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 458,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 563,
+          "importKind": "value",
+          "source": "antd",
+          "specifiers": [
+            {
+              "imported": "Button",
+              "local": "Button",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "Tooltip",
+              "local": "Tooltip",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 524,
+          "type": "ImportDeclaration"
+        }
+      ],
       "C:\\Users\\ZTS\\Desktop\\dev\\timo\\src\\components\\SettingsModal.tsx": [
         {
           "end": 135,
@@ -10844,7 +11278,7 @@
       ],
       "C:\\Users\\ZTS\\Desktop\\dev\\timo\\src\\pages\\Chat\\index.tsx": [
         {
-          "end": 53,
+          "end": 66,
           "importKind": "value",
           "source": "react",
           "specifiers": [
@@ -10862,13 +11296,18 @@
               "imported": "useRef",
               "local": "useRef",
               "type": "ImportSpecifier"
+            },
+            {
+              "imported": "useCallback",
+              "local": "useCallback",
+              "type": "ImportSpecifier"
             }
           ],
           "start": 1,
           "type": "ImportDeclaration"
         },
         {
-          "end": 158,
+          "end": 230,
           "importKind": "value",
           "source": "antd",
           "specifiers": [
@@ -10898,11 +11337,6 @@
               "type": "ImportSpecifier"
             },
             {
-              "imported": "Empty",
-              "local": "Empty",
-              "type": "ImportSpecifier"
-            },
-            {
               "imported": "Popconfirm",
               "local": "Popconfirm",
               "type": "ImportSpecifier"
@@ -10911,13 +11345,38 @@
               "imported": "message",
               "local": "antdMessage",
               "type": "ImportSpecifier"
+            },
+            {
+              "imported": "Drawer",
+              "local": "Drawer",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "Upload",
+              "local": "Upload",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "Tooltip",
+              "local": "Tooltip",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "ConfigProvider",
+              "local": "ConfigProvider",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "theme",
+              "local": "antdTheme",
+              "type": "ImportSpecifier"
             }
           ],
-          "start": 54,
+          "start": 67,
           "type": "ImportDeclaration"
         },
         {
-          "end": 285,
+          "end": 512,
           "importKind": "value",
           "source": "@ant-design/icons",
           "specifiers": [
@@ -10950,13 +11409,63 @@
               "imported": "SendOutlined",
               "local": "SendOutlined",
               "type": "ImportSpecifier"
+            },
+            {
+              "imported": "StopOutlined",
+              "local": "StopOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "ReloadOutlined",
+              "local": "ReloadOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "CopyOutlined",
+              "local": "CopyOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "SunOutlined",
+              "local": "SunOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "MoonOutlined",
+              "local": "MoonOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "MenuOutlined",
+              "local": "MenuOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "PictureOutlined",
+              "local": "PictureOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "EditOutlined",
+              "local": "EditOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "CheckOutlined",
+              "local": "CheckOutlined",
+              "type": "ImportSpecifier"
+            },
+            {
+              "imported": "CloseOutlined",
+              "local": "CloseOutlined",
+              "type": "ImportSpecifier"
             }
           ],
-          "start": 159,
+          "start": 231,
           "type": "ImportDeclaration"
         },
         {
-          "end": 333,
+          "end": 560,
           "importKind": "value",
           "source": "@umijs/max",
           "specifiers": [
@@ -10971,37 +11480,11 @@
               "type": "ImportSpecifier"
             }
           ],
-          "start": 286,
+          "start": 513,
           "type": "ImportDeclaration"
         },
         {
-          "end": 377,
-          "importKind": "value",
-          "source": "react-markdown",
-          "specifiers": [
-            {
-              "local": "ReactMarkdown",
-              "type": "ImportDefaultSpecifier"
-            }
-          ],
-          "start": 334,
-          "type": "ImportDeclaration"
-        },
-        {
-          "end": 413,
-          "importKind": "value",
-          "source": "remark-gfm",
-          "specifiers": [
-            {
-              "local": "remarkGfm",
-              "type": "ImportDefaultSpecifier"
-            }
-          ],
-          "start": 378,
-          "type": "ImportDeclaration"
-        },
-        {
-          "end": 473,
+          "end": 620,
           "importKind": "value",
           "source": "@/components/SettingsModal",
           "specifiers": [
@@ -11011,11 +11494,25 @@
               "type": "ImportSpecifier"
             }
           ],
-          "start": 414,
+          "start": 561,
           "type": "ImportDeclaration"
         },
         {
-          "end": 608,
+          "end": 686,
+          "importKind": "value",
+          "source": "@/components/MarkdownRenderer",
+          "specifiers": [
+            {
+              "imported": "MarkdownRenderer",
+              "local": "MarkdownRenderer",
+              "type": "ImportSpecifier"
+            }
+          ],
+          "start": 621,
+          "type": "ImportDeclaration"
+        },
+        {
+          "end": 843,
           "importKind": "value",
           "source": "@/services/api",
           "specifiers": [
@@ -11043,17 +11540,22 @@
               "imported": "getAvailableModels",
               "local": "getAvailableModels",
               "type": "ImportSpecifier"
+            },
+            {
+              "imported": "updateConversation",
+              "local": "updateConversation",
+              "type": "ImportSpecifier"
             }
           ],
-          "start": 474,
+          "start": 687,
           "type": "ImportDeclaration"
         },
         {
-          "end": 630,
+          "end": 865,
           "importKind": "value",
           "source": "./index.css",
           "specifiers": [],
-          "start": 609,
+          "start": 844,
           "type": "ImportDeclaration"
         }
       ],

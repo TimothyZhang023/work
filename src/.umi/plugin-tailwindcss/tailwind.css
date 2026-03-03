@@ -574,8 +574,16 @@ video {
   display: flex;
 }
 
+.table {
+  display: table;
+}
+
 .hidden {
   display: none;
+}
+
+.resize {
+  resize: both;
 }
 
 .truncate {

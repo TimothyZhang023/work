@@ -215,6 +215,20 @@ export function updateMessage(id, uid, content) {
   `).run(content, id, uid);
 }
 
+export function deleteLastMessages(conversationId, uid, count = 1) {
+  const rows = db.prepare(`
+    SELECT id FROM messages
+    WHERE conversation_id = ? AND uid = ?
+    ORDER BY created_at DESC
+    LIMIT ?
+  `).all(conversationId, uid, count);
+  const ids = rows.map(r => r.id);
+  if (ids.length) {
+    db.prepare(`DELETE FROM messages WHERE id IN (${ids.map(() => '?').join(',')})`).run(...ids);
+  }
+}
+
+
 // ============ Endpoint 组管理 ============
 
 export function getEndpointGroups(uid) {
