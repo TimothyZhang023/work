@@ -1,4 +1,4 @@
-import { defineConfig } from '@umijs/max';
+import { defineConfig } from "@umijs/max";
 
 export default defineConfig({
   antd: {},
@@ -7,37 +7,37 @@ export default defineConfig({
   initialState: {},
   request: {},
   locale: {
-    default: 'zh-CN',
+    default: "zh-CN",
     antd: true,
     baseNavigator: true,
   },
   layout: {
-    title: 'Gemini Chat',
+    title: "Gemini Chat",
   },
   routes: [
     {
-      path: '/',
-      redirect: '/chat',
+      path: "/",
+      redirect: "/chat",
     },
     {
-      name: 'Login',
-      path: '/login',
-      component: './Login',
+      name: "Login",
+      path: "/login",
+      component: "./Login",
       layout: false,
     },
     {
-      name: 'Chat',
-      path: '/chat',
-      component: './Chat',
+      name: "Chat",
+      path: "/chat",
+      component: "./Chat",
       layout: false,
     },
   ],
-  npmClient: 'npm',
-  outputPath: 'dist',
+  npmClient: "npm",
+  outputPath: "dist",
   esbuildMinifyIIFE: true,
   proxy: {
-    '/api': {
-      target: 'http://localhost:8866',
+    "/api": {
+      target: "http://localhost:8866",
       changeOrigin: true,
     },
   },

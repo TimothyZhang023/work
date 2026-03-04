@@ -20,14 +20,14 @@
 
 ## 🛠️ 技术栈
 
-| 层级 | 技术 |
-|------|------|
-| 前端框架 | [UmiJS (Max)](https://umijs.org/) + React 18 |
-| UI 组件 | [Ant Design 5](https://ant.design/) + Pro Components |
-| 样式 | Tailwind CSS |
-| 后端 | Node.js + [Express](https://expressjs.com/) |
-| 数据库 | SQLite（via `better-sqlite3`） |
-| AI 接入 | [openai SDK](https://github.com/openai/openai-node)（OpenAI 兼容接口） |
+| 层级     | 技术                                                                   |
+| -------- | ---------------------------------------------------------------------- |
+| 前端框架 | [UmiJS (Max)](https://umijs.org/) + React 18                           |
+| UI 组件  | [Ant Design 5](https://ant.design/) + Pro Components                   |
+| 样式     | Tailwind CSS                                                           |
+| 后端     | Node.js + [Express](https://expressjs.com/)                            |
+| 数据库   | SQLite（via `better-sqlite3`）                                         |
+| AI 接入  | [openai SDK](https://github.com/openai/openai-node)（OpenAI 兼容接口） |
 
 ---
 
@@ -139,8 +139,6 @@ ports:
 ```
 
 ---
-
-
 
 ```
 timo/

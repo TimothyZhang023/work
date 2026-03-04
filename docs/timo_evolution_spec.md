@@ -8,26 +8,26 @@
 
 ### 已实现功能
 
-| 模块 | 功能 | 实现方式 |
-|------|------|----------|
-| 用户系统 | 注册/登录/登出 | PBKDF2 加盐哈希 + Token 鉴权 |
-| 对话管理 | 创建/删除/切换/自动重命名 | SQLite + RESTful |
-| 流式聊天 | SSE 流式输出 + Markdown 渲染 | OpenAI SDK stream + react-markdown |
-| Endpoint 管理 | 多 Endpoint 增删改查 + 设置默认 | 数据库存储 base_url + api_key |
-| 模型管理 | 预设模型列表 + 自定义模型 | 全局 PRESET_MODELS + 用户自定义 |
-| 部署 | Docker 多阶段构建 + Compose | alpine + better-sqlite3 native |
+| 模块          | 功能                            | 实现方式                           |
+| ------------- | ------------------------------- | ---------------------------------- |
+| 用户系统      | 注册/登录/登出                  | PBKDF2 加盐哈希 + Token 鉴权       |
+| 对话管理      | 创建/删除/切换/自动重命名       | SQLite + RESTful                   |
+| 流式聊天      | SSE 流式输出 + Markdown 渲染    | OpenAI SDK stream + react-markdown |
+| Endpoint 管理 | 多 Endpoint 增删改查 + 设置默认 | 数据库存储 base_url + api_key      |
+| 模型管理      | 预设模型列表 + 自定义模型       | 全局 PRESET_MODELS + 用户自定义    |
+| 部署          | Docker 多阶段构建 + Compose     | alpine + better-sqlite3 native     |
 
 ### 技术债和已知短板
 
-| 问题 | 描述 |
-|------|------|
-| 💾 数据库 | SQLite 单文件，不支持并发写入，无法水平扩展 |
-| 🔐 安全 | Token 为随机字符串、非 JWT；无刷新机制；API Key 明文存储 |
-| 🖼️ 多模态 | 不支持图片/文件上传，仅纯文本 |
-| 📱 移动端 | 无响应式适配，Sider 固定 260px |
-| 🧪 测试 | 零测试覆盖 |
-| 📊 可观测性 | 无日志框架、无 APM、无请求追踪 |
-| 🌍 国际化 | 硬编码中文字符串 |
+| 问题        | 描述                                                     |
+| ----------- | -------------------------------------------------------- |
+| 💾 数据库   | SQLite 单文件，不支持并发写入，无法水平扩展              |
+| 🔐 安全     | Token 为随机字符串、非 JWT；无刷新机制；API Key 明文存储 |
+| 🖼️ 多模态   | 不支持图片/文件上传，仅纯文本                            |
+| 📱 移动端   | 无响应式适配，Sider 固定 260px                           |
+| 🧪 测试     | 零测试覆盖                                               |
+| 📊 可观测性 | 无日志框架、无 APM、无请求追踪                           |
+| 🌍 国际化   | 硬编码中文字符串                                         |
 
 ---
 
@@ -38,12 +38,14 @@
 > 同类竞品标配功能，用户感知最强
 
 #### 1.1 🖼️ 多模态支持
+
 - **图片上传**：输入框支持粘贴/拖拽/选择图片，发送至支持 Vision 的模型（GPT-4o、Gemini、Claude 3.5）
 - **文件上传**：PDF / Word / TXT 文本提取后注入上下文
 - **图片生成**：对接 DALL·E 3 / Gemini 图片生成，结果内嵌在聊天气泡中
 - **语音输入**：Web Speech API 实现语音转文字输入
 
 #### 1.2 💬 对话体验优化
+
 - **消息编辑/重新生成**：用户可编辑已发送的消息并重新生成 AI 回复（类似 ChatGPT）
 - **停止生成按钮**：流式输出过程中可手动终止（AbortController）
 - **消息复制/引用**：一键复制消息内容/代码块
@@ -53,6 +55,7 @@
 - **对话分享**：生成公开链接或导出为图片/PDF
 
 #### 1.3 🎨 UI/UX 升级
+
 - **暗色模式**：系统级跟随 + 手动切换
 - **移动端适配**：响应式 Sider（抽屉式）、底部输入栏
 - **对话文件夹/分组**：拖拽归类对话、置顶功能
@@ -67,22 +70,26 @@
 > 超越基础聊天，进入 AI Agent 能力层
 
 #### 2.1 🧠 Prompt 工程
+
 - **System Prompt 编辑器**：每个对话可设置自定义系统提示词
 - **Prompt 模板库**：内置常用场景模板（翻译、代码审查、写作助手、角色扮演）
 - **Prompt 收藏/共享**：用户可以保存和分享自己的 Prompt
 
 #### 2.2 🔄 模型对比 & 路由
+
 - **多模型并行对比**：同一 Prompt 同时发送给 2-4 个模型，结果左右对比（类似 Chatbot Arena）
 - **负载均衡**：多个 Endpoint 之间自动轮询负载均衡
 - **模型路由策略**：按模型能力自动选择（简单问题用小模型、复杂问题用大模型）
 - **Fallback 机制**：主模型请求失败自动切换到备用 Endpoint
 
 #### 2.3 📚 知识库 / RAG
+
 - **文档知识库**：上传 PDF/Markdown/网页，向量化后实现检索增强生成
 - **网页摘要**：粘贴 URL 自动抓取内容并纳入上下文
 - **长上下文管理**：Token 计数器 + 自动截断/摘要历史消息
 
 #### 2.4 🤖 Agent / 工具调用
+
 - **Function Calling**：支持 OpenAI 格式的工具调用协议
 - **内置工具**：
   - 🌤️ 天气查询
@@ -100,18 +107,21 @@
 > 从单用户工具升级为可协作的 AI 平台
 
 #### 3.1 👥 多用户 & 协作
+
 - **团队/组织管理**：创建团队、邀请成员、角色权限（管理员/成员/只读）
 - **共享对话**：团队内共享和协作编辑对话
 - **用量配额管理**：按用户/团队限制 Token 消耗
 - **审计日志**：记录所有 API 调用和管理操作
 
 #### 3.2 💰 用量统计 & 计费
+
 - **Token 统计面板**：按对话/模型/用户/日期维度统计 Token 消耗
 - **费用估算**：根据各模型定价自动计算 API 开销
 - **导出报表**：CSV/Excel 导出账单
 - **预算告警**：当消耗达到阈值时通知
 
 #### 3.3 🔌 API & 集成
+
 - **OpenAI 兼容 API Server**：Timo 作为 API 代理，对外暴露标准 OpenAI 接口
   - 下游应用（如 Cursor、Cline、VS Code 插件）可直接连接
   - 中间层实现负载、鉴权、审计
@@ -119,6 +129,7 @@
 - **API 密钥管理**：用户可创建子 API Key（限定模型/频率/额度）
 
 #### 3.4 🧩 插件系统
+
 - **插件 SDK**：定义标准插件接口（渲染组件 + 工具调用）
 - **插件市场**：支持安装/卸载第三方插件
 - **内置插件示例**：
@@ -134,12 +145,14 @@
 > 保障产品质量和可持续发展
 
 #### 4.1 🏗️ 架构升级
+
 - **数据库迁移**：SQLite → PostgreSQL（或可配置切换）
 - **缓存层**：Redis 缓存热点数据（会话/模型列表）
 - **消息队列**：长任务（文档解析、向量化）异步处理
 - **前后端分离部署**：前端 CDN + 后端 API 独立扩缩
 
 #### 4.2 🔐 安全加固
+
 - **API Key 加密存储**：AES-256-GCM 加密存储 API Key，运行时解密
 - **JWT + Refresh Token**：替换当前 Token 方案，支持无感刷新
 - **CSRF / XSS 防护**：Content-Security-Policy、sanitize 输入
@@ -148,11 +161,13 @@
 - **敏感词过滤**：可选的输入/输出内容审核
 
 #### 4.3 🧪 质量保障
+
 - **单元测试**：Vitest + Testing Library 覆盖核心逻辑
-- **E2E 测试**：Playwright 自动化关键流程（登录→聊天→设置）
+- **E2E 测试**：Playwright 自动化关键流程（登录 → 聊天 → 设置）
 - **CI/CD**：GitHub Actions 自动测试 + 构建 + 推送 Docker 镜像
 
 #### 4.4 📊 可观测性
+
 - **结构化日志**：pino / winston 分级日志
 - **请求追踪**：OpenTelemetry + Jaeger
 - **健康检查**：`/health` 端点 + Docker healthcheck
@@ -160,6 +175,7 @@
 - **性能面板**：TTFB、首 Token 延迟、P50/P95 响应时间
 
 #### 4.5 🌍 国际化 & 无障碍
+
 - **i18n**：umi-plugin-locale 支持中/英/日多语言
 - **a11y**：ARIA 标签、键盘导航、屏幕阅读器兼容
 - **主题定制**：用户可选择/自定义主题配色
@@ -168,24 +184,24 @@
 
 ## 三、竞品对标
 
-| 功能 | ChatGPT | Claude | Gemini Web | Open WebUI | LobeChat | **Timo (目标)** |
-|------|---------|--------|------------|------------|----------|----------------|
-| 多 Endpoint | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| 多模型切换 | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| 图片上传 | ✅ | ✅ | ✅ | ✅ | ✅ | 🔜 Phase 1 |
-| 文件上传 | ✅ | ✅ | ✅ | ✅ | ✅ | 🔜 Phase 1 |
-| RAG 知识库 | ✅ GPTs | ✅ Projects | ❌ | ✅ | ✅ | 🔜 Phase 2 |
-| 工具调用 | ✅ | ✅ MCP | ✅ | ✅ | ✅ | 🔜 Phase 2 |
-| 联网搜索 | ✅ | ✅ | ✅ | ✅ | ✅ | 🔜 Phase 2 |
-| 代码执行 | ✅ | ✅ | ✅ | ✅ | ❌ | 🔜 Phase 2 |
-| 用量统计 | ✅ | ❌ | ❌ | ❌ | ❌ | 🔜 Phase 3 |
-| 团队协作 | ✅ Team | ✅ Team | ❌ | ❌ | ❌ | 🔜 Phase 3 |
-| API 代理 | ❌ | ❌ | ❌ | ✅ | ❌ | 🔜 Phase 3 |
-| 插件系统 | ✅ GPTs | ❌ | ❌ | ✅ | ✅ | 🔜 Phase 3 |
-| 暗色模式 | ✅ | ✅ | ✅ | ✅ | ✅ | 🔜 Phase 1 |
-| 移动端适配 | ✅ App | ✅ App | ✅ App | ✅ PWA | ✅ PWA | 🔜 Phase 1 |
-| 私有化部署 | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Docker 一键部署 | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| 功能            | ChatGPT | Claude      | Gemini Web | Open WebUI | LobeChat | **Timo (目标)** |
+| --------------- | ------- | ----------- | ---------- | ---------- | -------- | --------------- |
+| 多 Endpoint     | ❌      | ❌          | ❌         | ✅         | ✅       | ✅              |
+| 多模型切换      | ✅      | ✅          | ✅         | ✅         | ✅       | ✅              |
+| 图片上传        | ✅      | ✅          | ✅         | ✅         | ✅       | 🔜 Phase 1      |
+| 文件上传        | ✅      | ✅          | ✅         | ✅         | ✅       | 🔜 Phase 1      |
+| RAG 知识库      | ✅ GPTs | ✅ Projects | ❌         | ✅         | ✅       | 🔜 Phase 2      |
+| 工具调用        | ✅      | ✅ MCP      | ✅         | ✅         | ✅       | 🔜 Phase 2      |
+| 联网搜索        | ✅      | ✅          | ✅         | ✅         | ✅       | 🔜 Phase 2      |
+| 代码执行        | ✅      | ✅          | ✅         | ✅         | ❌       | 🔜 Phase 2      |
+| 用量统计        | ✅      | ❌          | ❌         | ❌         | ❌       | 🔜 Phase 3      |
+| 团队协作        | ✅ Team | ✅ Team     | ❌         | ❌         | ❌       | 🔜 Phase 3      |
+| API 代理        | ❌      | ❌          | ❌         | ✅         | ❌       | 🔜 Phase 3      |
+| 插件系统        | ✅ GPTs | ❌          | ❌         | ✅         | ✅       | 🔜 Phase 3      |
+| 暗色模式        | ✅      | ✅          | ✅         | ✅         | ✅       | 🔜 Phase 1      |
+| 移动端适配      | ✅ App  | ✅ App      | ✅ App     | ✅ PWA     | ✅ PWA   | 🔜 Phase 1      |
+| 私有化部署      | ❌      | ❌          | ❌         | ✅         | ✅       | ✅              |
+| Docker 一键部署 | ❌      | ❌          | ❌         | ✅         | ✅       | ✅              |
 
 ---
 
@@ -194,6 +210,7 @@
 > 基于 **用户价值 × 实现成本** 综合评估
 
 ### 🔴 高优先级（立即做）
+
 1. **停止生成按钮** — 成本极低、体验提升大
 2. **暗色模式** — 用户期望度最高的 UI 功能
 3. **消息编辑/重新生成** — 核心聊天体验
@@ -202,6 +219,7 @@
 6. **图片上传** — 多模态已是标配
 
 ### 🟡 中优先级（下一迭代）
+
 7. **System Prompt 编辑器** — 差异化能力
 8. **消息复制 + 代码块复制按钮**
 9. **LaTeX 渲染**
@@ -210,6 +228,7 @@
 12. **模型 Fallback**
 
 ### 🟢 低优先级（规划期）
+
 13. **RAG 知识库** — 实现成本高
 14. **插件系统** — 需要完善的架构
 15. **团队协作** — 目标用户群确认后再决定
@@ -219,19 +238,19 @@
 
 ## 五、技术选型建议
 
-| 需求 | 推荐 | 备选 |
-|------|------|------|
-| 代码高亮 | `react-syntax-highlighter` + Prism | `shiki` |
-| LaTeX 渲染 | `rehype-katex` + `remark-math` | `mathjax` |
-| 暗色模式 | Ant Design 5 `ConfigProvider` + CSS vars | |
-| 图片上传 | Ant Design `Upload` + multer | |
-| 向量数据库 (RAG) | `@xenova/transformers` + `hnswlib` | Chroma / Qdrant |
-| 代码执行 | `isolated-vm` 沙箱 | Docker in Docker |
-| i18n | `@umijs/max` 内置 locale | `react-intl` |
-| JWT | `jsonwebtoken` | `jose` |
-| 速率限制 | `express-rate-limit` | |
-| 日志 | `pino` | `winston` |
-| E2E 测试 | `playwright` | `cypress` |
+| 需求             | 推荐                                     | 备选             |
+| ---------------- | ---------------------------------------- | ---------------- |
+| 代码高亮         | `react-syntax-highlighter` + Prism       | `shiki`          |
+| LaTeX 渲染       | `rehype-katex` + `remark-math`           | `mathjax`        |
+| 暗色模式         | Ant Design 5 `ConfigProvider` + CSS vars |                  |
+| 图片上传         | Ant Design `Upload` + multer             |                  |
+| 向量数据库 (RAG) | `@xenova/transformers` + `hnswlib`       | Chroma / Qdrant  |
+| 代码执行         | `isolated-vm` 沙箱                       | Docker in Docker |
+| i18n             | `@umijs/max` 内置 locale                 | `react-intl`     |
+| JWT              | `jsonwebtoken`                           | `jose`           |
+| 速率限制         | `express-rate-limit`                     |                  |
+| 日志             | `pino`                                   | `winston`        |
+| E2E 测试         | `playwright`                             | `cypress`        |
 
 ---
 

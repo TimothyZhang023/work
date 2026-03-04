@@ -4,17 +4,17 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "max build",
     "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
     "dev:client": "max dev",
     "dev:server": "node server.js",
-    "build": "max build",
+    "format": "prettier --write .",
+    "postinstall": "max setup",
+    "prepare": "husky install",
     "start": "node server.js",
     "test": "vitest run",
-    "test:watch": "vitest",
     "test:ci": "vitest run --coverage.enabled=false",
-    "format": "prettier --write .",
-    "prepare": "husky install",
-    "postinstall": "max setup"
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@ant-design/icons": "^5.0.1",

@@ -2,7 +2,9 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-const dbPath = path.join(os.tmpdir(), `timo-vitest-${process.pid}.db`);
+import crypto from 'node:crypto';
+
+const dbPath = path.join(os.tmpdir(), `timo-vitest-${process.pid}-${crypto.randomUUID()}.db`);
 
 process.env.DB_PATH = dbPath;
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret';

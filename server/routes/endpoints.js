@@ -1,30 +1,30 @@
-import { Router } from 'express';
+import { Router } from "express";
+import { authMiddleware } from "../middleware/auth.js";
 import {
-  getEndpointGroups,
-  getEndpointGroup,
-  createEndpointGroup,
-  updateEndpointGroup,
-  setDefaultEndpointGroup,
-  deleteEndpointGroup,
-  getModels,
   addModel,
+  createEndpointGroup,
+  deleteEndpointGroup,
   deleteModel,
   getDefaultEndpointGroup,
-  PRESET_MODELS
-} from '../models/database.js';
-import { authMiddleware } from '../middleware/auth.js';
+  getEndpointGroup,
+  getEndpointGroups,
+  getModels,
+  PRESET_MODELS,
+  setDefaultEndpointGroup,
+  updateEndpointGroup,
+} from "../models/database.js";
 
 const router = Router();
 
 // 获取预设模型列表 (无需认证)
-router.get('/preset-models', (req, res) => {
+router.get("/preset-models", (req, res) => {
   res.json(PRESET_MODELS);
 });
 
 router.use(authMiddleware);
 
 // 获取前端可用的模型列表 (必须放在 /:id 之前)
-router.get('/available/models', (req, res) => {
+router.get("/available/models", (req, res) => {
   try {
     const defaultGroup = getDefaultEndpointGroup(req.uid);
     if (!defaultGroup) {
@@ -45,10 +45,10 @@ router.get('/available/models', (req, res) => {
 });
 
 // 获取所有 endpoint 组
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   try {
     const groups = getEndpointGroups(req.uid);
-    const safeGroups = groups.map(g => ({
+    const safeGroups = groups.map((g) => ({
       id: g.id,
       name: g.name,
       base_url: g.base_url,
@@ -56,7 +56,7 @@ router.get('/', (req, res) => {
       use_preset_models: g.use_preset_models,
       created_at: g.created_at,
       updated_at: g.updated_at,
-      api_key_preview: g.api_key ? g.api_key.slice(0, 8) + '...' : ''
+      api_key_preview: g.api_key ? g.api_key.slice(0, 8) + "..." : "",
     }));
     res.json(safeGroups);
   } catch (error) {
@@ -65,12 +65,12 @@ router.get('/', (req, res) => {
 });
 
 // 获取单个 endpoint 组
-router.get('/:id', (req, res) => {
+router.get("/:id", (req, res) => {
   try {
     const { id } = req.params;
     const group = getEndpointGroup(id, req.uid);
     if (!group) {
-      return res.status(404).json({ error: 'Endpoint not found' });
+      return res.status(404).json({ error: "Endpoint not found" });
     }
     res.json(group);
   } catch (error) {
@@ -79,13 +79,20 @@ router.get('/:id', (req, res) => {
 });
 
 // 创建 endpoint 组
-router.post('/', (req, res) => {
+router.post("/", (req, res) => {
   try {
     const { name, base_url, api_key, is_default, use_preset_models } = req.body;
     if (!name || !base_url || !api_key) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: "Missing required fields" });
     }
-    const group = createEndpointGroup(req.uid, name, base_url, api_key, is_default, use_preset_models);
+    const group = createEndpointGroup(
+      req.uid,
+      name,
+      base_url,
+      api_key,
+      is_default,
+      use_preset_models
+    );
     res.json(group);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -93,14 +100,21 @@ router.post('/', (req, res) => {
 });
 
 // 更新 endpoint 组
-router.put('/:id', (req, res) => {
+router.put("/:id", (req, res) => {
   try {
     const { id } = req.params;
     const { name, base_url, api_key, use_preset_models } = req.body;
     if (!name || !base_url) {
-      return res.status(400).json({ error: 'Missing required fields' });
+      return res.status(400).json({ error: "Missing required fields" });
     }
-    updateEndpointGroup(id, req.uid, name, base_url, api_key, use_preset_models);
+    updateEndpointGroup(
+      id,
+      req.uid,
+      name,
+      base_url,
+      api_key,
+      use_preset_models
+    );
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -108,7 +122,7 @@ router.put('/:id', (req, res) => {
 });
 
 // 设置默认
-router.put('/:id/default', (req, res) => {
+router.put("/:id/default", (req, res) => {
   try {
     const { id } = req.params;
     setDefaultEndpointGroup(id, req.uid);
@@ -119,7 +133,7 @@ router.put('/:id/default', (req, res) => {
 });
 
 // 删除 endpoint 组
-router.delete('/:id', (req, res) => {
+router.delete("/:id", (req, res) => {
   try {
     const { id } = req.params;
     deleteEndpointGroup(id, req.uid);
@@ -130,7 +144,7 @@ router.delete('/:id', (req, res) => {
 });
 
 // 获取模型列表
-router.get('/:id/models', (req, res) => {
+router.get("/:id/models", (req, res) => {
   try {
     const { id } = req.params;
     const models = getModels(id, req.uid);
@@ -141,7 +155,7 @@ router.get('/:id/models', (req, res) => {
 });
 
 // 添加模型
-router.post('/:id/models', (req, res) => {
+router.post("/:id/models", (req, res) => {
   try {
     const { id } = req.params;
     const { model_id, display_name } = req.body;
@@ -153,7 +167,7 @@ router.post('/:id/models', (req, res) => {
 });
 
 // 删除模型
-router.delete('/models/:id', (req, res) => {
+router.delete("/models/:id", (req, res) => {
   try {
     const { id } = req.params;
     deleteModel(id, req.uid);
