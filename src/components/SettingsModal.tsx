@@ -1,29 +1,36 @@
 import {
-  ModalForm,
-  ProFormText,
-  ProFormSelect,
-  ProFormGroup,
-  ProList,
-  ProFormSwitch,
-} from '@ant-design/pro-components';
-import { Button, message, Space, Tag, Modal, Form } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, SettingOutlined } from '@ant-design/icons';
-import { useState, useEffect } from 'react';
-import {
-  getEndpoints,
-  createEndpoint,
-  updateEndpoint,
-  deleteEndpoint,
-  setDefaultEndpoint,
-  getEndpointModels,
   addModelToEndpoint,
+  createEndpoint,
+  deleteEndpoint,
   deleteModelFromEndpoint,
-} from '@/services/api';
+  getEndpointModels,
+  getEndpoints,
+  setDefaultEndpoint,
+  updateEndpoint,
+} from "@/services/api";
+import { PlusOutlined } from "@ant-design/icons";
+import {
+  ModalForm,
+  ProFormSwitch,
+  ProFormText,
+  ProList,
+} from "@ant-design/pro-components";
+import { Button, Form, message, Modal, Space, Tag } from "antd";
+import { useEffect, useState } from "react";
 
-export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) => {
+export const SettingsModal = ({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) => {
   const [endpoints, setEndpoints] = useState<API.Endpoint[]>([]);
-  const [editingEndpoint, setEditingEndpoint] = useState<API.Endpoint | null>(null);
-  const [selectedEndpointForModels, setSelectedEndpointForModels] = useState<API.Endpoint | null>(null);
+  const [editingEndpoint, setEditingEndpoint] = useState<API.Endpoint | null>(
+    null
+  );
+  const [selectedEndpointForModels, setSelectedEndpointForModels] =
+    useState<API.Endpoint | null>(null);
 
   // Model management state
   const [models, setModels] = useState<API.Model[]>([]);
@@ -62,20 +69,20 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
   const handleDeleteEndpoint = async (id: number) => {
     try {
       await deleteEndpoint(id);
-      message.success('删除成功');
+      message.success("删除成功");
       loadEndpoints();
     } catch (error) {
-      message.error('删除失败');
+      message.error("删除失败");
     }
   };
 
   const handleSetDefault = async (id: number) => {
     try {
       await setDefaultEndpoint(id);
-      message.success('设置成功');
+      message.success("设置成功");
       loadEndpoints();
     } catch (error) {
-      message.error('设置失败');
+      message.error("设置失败");
     }
   };
 
@@ -87,7 +94,13 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
       submitter={false}
       width={800}
     >
-      <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'space-between' }}>
+      <div
+        style={{
+          marginBottom: 16,
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
         <h3>API Endpoints</h3>
         <Button
           type="primary"
@@ -105,7 +118,7 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
         dataSource={endpoints}
         metas={{
           title: {
-            dataIndex: 'name',
+            dataIndex: "name",
             render: (text, row) => (
               <Space>
                 {text}
@@ -114,14 +127,26 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
             ),
           },
           description: {
-            dataIndex: 'base_url',
+            dataIndex: "base_url",
           },
           actions: {
             render: (text, row) => [
-              <a key="default" onClick={() => handleSetDefault(row.id)}>设为默认</a>,
-              <a key="edit" onClick={() => setEditingEndpoint(row)}>编辑</a>,
-              <a key="models" onClick={() => setSelectedEndpointForModels(row)}>模型</a>,
-              <a key="delete" onClick={() => handleDeleteEndpoint(row.id)} style={{ color: 'red' }}>删除</a>,
+              <a key="default" onClick={() => handleSetDefault(row.id)}>
+                设为默认
+              </a>,
+              <a key="edit" onClick={() => setEditingEndpoint(row)}>
+                编辑
+              </a>,
+              <a key="models" onClick={() => setSelectedEndpointForModels(row)}>
+                模型
+              </a>,
+              <a
+                key="delete"
+                onClick={() => handleDeleteEndpoint(row.id)}
+                style={{ color: "red" }}
+              >
+                删除
+              </a>,
             ],
           },
         }}
@@ -129,7 +154,7 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
 
       {/* Endpoint Edit Modal */}
       <ModalForm
-        title={editingEndpoint?.id ? '编辑 Endpoint' : '添加 Endpoint'}
+        title={editingEndpoint?.id ? "编辑 Endpoint" : "添加 Endpoint"}
         open={!!editingEndpoint}
         onOpenChange={(visible) => !visible && setEditingEndpoint(null)}
         initialValues={editingEndpoint || {}}
@@ -140,7 +165,7 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
             } else {
               await createEndpoint(values);
             }
-            message.success('保存成功');
+            message.success("保存成功");
             setEditingEndpoint(null);
             loadEndpoints();
             return true;
@@ -149,16 +174,32 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
           }
         }}
       >
-        <ProFormText name="name" label="名称" placeholder="如：OpenAI" rules={[{ required: true }]} />
-        <ProFormText name="base_url" label="Base URL" placeholder="如：https://api.openai.com/v1" rules={[{ required: true }]} />
+        <ProFormText
+          name="name"
+          label="名称"
+          placeholder="如：OpenAI"
+          rules={[{ required: true }]}
+        />
+        <ProFormText
+          name="base_url"
+          label="Base URL"
+          placeholder="如：https://api.openai.com/v1"
+          rules={[{ required: true }]}
+        />
         <ProFormText.Password
           name="api_key"
           label="API Key"
-          placeholder={editingEndpoint?.id ? '留空则保持不变' : 'sk-...'}
+          placeholder={editingEndpoint?.id ? "留空则保持不变" : "sk-..."}
           rules={[{ required: !editingEndpoint?.id }]}
         />
-        <ProFormSwitch name="use_preset_models" label="使用预设模型列表" initialValue={true} />
-        {!editingEndpoint?.id && <ProFormSwitch name="is_default" label="设为默认" />}
+        <ProFormSwitch
+          name="use_preset_models"
+          label="使用预设模型列表"
+          initialValue={true}
+        />
+        {!editingEndpoint?.id && (
+          <ProFormSwitch name="is_default" label="设为默认" />
+        )}
       </ModalForm>
 
       {/* Models Management Modal */}
@@ -176,23 +217,31 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
             if (!selectedEndpointForModels) return;
             try {
               await addModelToEndpoint(selectedEndpointForModels.id, values);
-              message.success('添加成功');
+              message.success("添加成功");
               newModelForm.resetFields();
               loadModels(selectedEndpointForModels.id);
             } catch (error) {
-              message.error('添加失败');
+              message.error("添加失败");
             }
           }}
           style={{ marginBottom: 16 }}
         >
-          <Form.Item name="model_id" rules={[{ required: true, message: '请输入模型ID' }]}>
+          <Form.Item
+            name="model_id"
+            rules={[{ required: true, message: "请输入模型ID" }]}
+          >
             <input className="ant-input" placeholder="模型 ID (如 gpt-4)" />
           </Form.Item>
-          <Form.Item name="display_name" rules={[{ required: true, message: '请输入显示名称' }]}>
+          <Form.Item
+            name="display_name"
+            rules={[{ required: true, message: "请输入显示名称" }]}
+          >
             <input className="ant-input" placeholder="显示名称" />
           </Form.Item>
           <Form.Item>
-            <Button type="primary" htmlType="submit">添加</Button>
+            <Button type="primary" htmlType="submit">
+              添加
+            </Button>
           </Form.Item>
         </Form>
 
@@ -200,19 +249,26 @@ export const SettingsModal = ({ open, onOpenChange }: { open: boolean; onOpenCha
           rowKey="id"
           dataSource={models}
           metas={{
-            title: { dataIndex: 'display_name' },
-            description: { dataIndex: 'model_id' },
+            title: { dataIndex: "display_name" },
+            description: { dataIndex: "model_id" },
             actions: {
               render: (text, row) => [
-                <a key="delete" onClick={async () => {
-                  try {
-                    await deleteModelFromEndpoint(row.id!);
-                    message.success('删除成功');
-                    if (selectedEndpointForModels) loadModels(selectedEndpointForModels.id);
-                  } catch (e) {
-                    message.error('删除失败');
-                  }
-                }} style={{ color: 'red' }}>删除</a>,
+                <a
+                  key="delete"
+                  onClick={async () => {
+                    try {
+                      await deleteModelFromEndpoint(row.id!);
+                      message.success("删除成功");
+                      if (selectedEndpointForModels)
+                        loadModels(selectedEndpointForModels.id);
+                    } catch (e) {
+                      message.error("删除失败");
+                    }
+                  }}
+                  style={{ color: "red" }}
+                >
+                  删除
+                </a>,
               ],
             },
           }}

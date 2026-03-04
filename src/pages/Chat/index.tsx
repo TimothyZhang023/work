@@ -1,39 +1,64 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { AccountModal } from "@/components/AccountModal";
+import { MarkdownRenderer } from "@/components/MarkdownRenderer";
+import { ModelCompareModal } from "@/components/ModelCompareModal";
+import { SettingsModal } from "@/components/SettingsModal";
+import { SystemPromptModal } from "@/components/SystemPromptModal";
 import {
-  Layout, Button, Input, Select, Avatar, Popconfirm,
-  message as antdMessage, Drawer, Upload, Tooltip, ConfigProvider, theme as antdTheme,
-} from 'antd';
-import {
-  PlusOutlined, DeleteOutlined, SettingOutlined, LogoutOutlined,
-  UserOutlined, SendOutlined, StopOutlined, ReloadOutlined,
-  CopyOutlined, SunOutlined, MoonOutlined, MenuOutlined,
-  PictureOutlined, EditOutlined, CheckOutlined, CloseOutlined,
-  ThunderboltOutlined, BarChartOutlined,
-} from '@ant-design/icons';
-import { useModel, history, useIntl } from '@umijs/max';
-import { SettingsModal } from '@/components/SettingsModal';
-import { MarkdownRenderer } from '@/components/MarkdownRenderer';
-import { SystemPromptModal } from '@/components/SystemPromptModal';
-import { ModelCompareModal } from '@/components/ModelCompareModal';
-import { AccountModal } from '@/components/AccountModal';
-import {
-  getConversations,
   createConversation,
   deleteConversation,
-  getMessages,
   getAvailableModels,
-  updateConversation,
+  getConversations,
+  getMessages,
   summarizeConversationTitle,
-} from '@/services/api';
-import './index.css';
+  updateConversation,
+} from "@/services/api";
+import {
+  BarChartOutlined,
+  CheckOutlined,
+  CloseOutlined,
+  CopyOutlined,
+  DeleteOutlined,
+  EditOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  MoonOutlined,
+  PictureOutlined,
+  PlusOutlined,
+  ReloadOutlined,
+  SendOutlined,
+  SettingOutlined,
+  StopOutlined,
+  SunOutlined,
+  ThunderboltOutlined,
+  UserOutlined,
+} from "@ant-design/icons";
+import { history, useIntl, useModel } from "@umijs/max";
+import {
+  Avatar,
+  Button,
+  ConfigProvider,
+  Drawer,
+  Input,
+  Layout,
+  Popconfirm,
+  Select,
+  Tooltip,
+  Upload,
+  message as antdMessage,
+  theme as antdTheme,
+} from "antd";
+import { useCallback, useEffect, useRef, useState } from "react";
+import "./index.css";
 
 const { Sider, Content } = Layout;
 
 // 从 localStorage 获取/保存主题
-const getStoredTheme = (): 'light' | 'dark' => {
-  const saved = localStorage.getItem('timo-theme');
-  if (saved === 'dark' || saved === 'light') return saved;
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+const getStoredTheme = (): "light" | "dark" => {
+  const saved = localStorage.getItem("timo-theme");
+  if (saved === "dark" || saved === "light") return saved;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches
+    ? "dark"
+    : "light";
 };
 
 // 将图片文件转为 base64
@@ -44,39 +69,41 @@ const fileToBase64 = (file: File): Promise<string> =>
     reader.onload = () => {
       const result = reader.result as string;
       // 只保留 base64 数据部分
-      resolve(result.split(',')[1]);
+      resolve(result.split(",")[1]);
     };
     reader.onerror = reject;
   });
 
 // 从存储内容中提取显示文本（去掉图片数据）
 const extractDisplayContent = (content: string): string => {
-  return content.replace(/\[IMAGE_DATA:[^\]]+\]/g, '[📷 图片]');
+  return content.replace(/\[IMAGE_DATA:[^\]]+\]/g, "[📷 图片]");
 };
 
 // 检查消息是否包含图片
-const hasImage = (content: string): boolean => content.includes('[IMAGE_DATA:');
+const hasImage = (content: string): boolean => content.includes("[IMAGE_DATA:");
 
 export default () => {
-  const { currentUser, logout, isLoggedIn } = useModel('global');
+  const { currentUser, logout, isLoggedIn } = useModel("global");
   const intl = useIntl();
 
   // UI 状态
-  const [theme, setTheme] = useState<'light' | 'dark'>(getStoredTheme);
+  const [theme, setTheme] = useState<"light" | "dark">(getStoredTheme);
   const [siderVisible, setSiderVisible] = useState(false); // mobile drawer
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const isDark = theme === 'dark';
+  const isDark = theme === "dark";
 
   // 对话状态
   const [conversations, setConversations] = useState<API.Conversation[]>([]);
   const [currentConvId, setCurrentConvId] = useState<string | null>(null);
   const [messages, setMessages] = useState<API.Message[]>([]);
   const [models, setModels] = useState<API.Model[]>([]);
-  const [selectedModel, setSelectedModel] = useState<string>('');
+  const [selectedModel, setSelectedModel] = useState<string>("");
 
   // 输入状态
-  const [inputText, setInputText] = useState('');
-  const [pendingImages, setPendingImages] = useState<{ file: File; preview: string }[]>([]);
+  const [inputText, setInputText] = useState("");
+  const [pendingImages, setPendingImages] = useState<
+    { file: File; preview: string }[]
+  >([]);
 
   // 流式处理状态
   const [loading, setLoading] = useState(false);
@@ -87,8 +114,8 @@ export default () => {
 
   // System Prompt
   const [showSystemPrompt, setShowSystemPrompt] = useState(false);
-  const currentConv = conversations.find(c => c.id === currentConvId) ?? null;
-  const currentSystemPrompt = currentConv?.system_prompt ?? '';
+  const currentConv = conversations.find((c) => c.id === currentConvId) ?? null;
+  const currentSystemPrompt = currentConv?.system_prompt ?? "";
 
   // 模型对比
   const [showCompare, setShowCompare] = useState(false);
@@ -98,7 +125,7 @@ export default () => {
 
   // 对话重命名状态
   const [editingTitleId, setEditingTitleId] = useState<string | null>(null);
-  const [editingTitle, setEditingTitle] = useState('');
+  const [editingTitle, setEditingTitle] = useState("");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -106,20 +133,20 @@ export default () => {
   // 响应式监听
   useEffect(() => {
     const handler = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener('resize', handler);
-    return () => window.removeEventListener('resize', handler);
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
   }, []);
 
   // 主题持久化
   useEffect(() => {
-    document.documentElement.setAttribute('data-theme', theme);
-    localStorage.setItem('timo-theme', theme);
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("timo-theme", theme);
   }, [theme]);
 
   // 登录检查 & 初始化
   useEffect(() => {
     if (!isLoggedIn) {
-      history.push('/login');
+      history.push("/login");
       return;
     }
     loadInitData();
@@ -128,13 +155,13 @@ export default () => {
   // 键盘快捷键
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+      if ((e.ctrlKey || e.metaKey) && e.key === "n") {
         e.preventDefault();
         handleCreateChat();
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
   }, [conversations]);
 
   const loadInitData = async () => {
@@ -145,7 +172,8 @@ export default () => {
       ]);
       setConversations(convs);
       setModels(availableModels);
-      if (availableModels.length > 0) setSelectedModel(availableModels[0].model_id);
+      if (availableModels.length > 0)
+        setSelectedModel(availableModels[0].model_id);
       if (convs.length > 0) handleSelectConversation(convs[0].id);
     } catch (error) {
       console.error(error);
@@ -162,7 +190,7 @@ export default () => {
   };
 
   const scrollToBottom = useCallback(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
   useEffect(() => {
@@ -171,8 +199,8 @@ export default () => {
 
   const handleCreateChat = async () => {
     try {
-      const newConv = await createConversation('新对话');
-      setConversations(prev => [newConv, ...prev]);
+      const newConv = await createConversation("新对话");
+      setConversations((prev) => [newConv, ...prev]);
       setCurrentConvId(newConv.id);
       setMessages([]);
       if (isMobile) setSiderVisible(false);
@@ -197,7 +225,7 @@ export default () => {
     e.stopPropagation();
     try {
       await deleteConversation(id);
-      const newConvs = conversations.filter(c => c.id !== id);
+      const newConvs = conversations.filter((c) => c.id !== id);
       setConversations(newConvs);
       if (currentConvId === id) {
         if (newConvs.length > 0) {
@@ -225,8 +253,10 @@ export default () => {
     }
     try {
       await updateConversation(editingTitleId, editingTitle.trim());
-      setConversations(prev =>
-        prev.map(c => c.id === editingTitleId ? { ...c, title: editingTitle.trim() } : c)
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === editingTitleId ? { ...c, title: editingTitle.trim() } : c
+        )
       );
     } catch (e) {
       console.error(e);
@@ -238,81 +268,96 @@ export default () => {
     if (!currentConvId) return;
     try {
       await updateConversation(currentConvId, undefined as any, prompt);
-      setConversations(prev =>
-        prev.map(c => c.id === currentConvId ? { ...c, system_prompt: prompt } : c)
+      setConversations((prev) =>
+        prev.map((c) =>
+          c.id === currentConvId ? { ...c, system_prompt: prompt } : c
+        )
       );
-      antdMessage.success('System Prompt 已保存');
+      antdMessage.success("System Prompt 已保存");
     } catch (e) {
-      antdMessage.error('保存失败');
+      antdMessage.error("保存失败");
     }
   };
 
-
   // 核心发送函数（兼容 send + regenerate）
-  const streamChat = async (convId: string, userMsg: API.Message | null, isRegenerate = false) => {
+  const streamChat = async (
+    convId: string,
+    userMsg: API.Message | null,
+    isRegenerate = false
+  ) => {
     setLoading(true);
     const controller = new AbortController();
     abortControllerRef.current = controller;
 
     try {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem("token");
       const url = isRegenerate
         ? `/api/conversations/${convId}/regenerate`
         : `/api/conversations/${convId}/chat`;
 
       let body: any = { model: selectedModel };
       if (!isRegenerate && userMsg) {
-        body.message = userMsg.content.replace(/\[IMAGE_DATA:[^\]]+\]/g, '').trim() || userMsg.content;
+        body.message =
+          userMsg.content.replace(/\[IMAGE_DATA:[^\]]+\]/g, "").trim() ||
+          userMsg.content;
         // 提取图片 base64
-        const imgMatches = [...userMsg.content.matchAll(/\[IMAGE_DATA:([^\]]+)\]/g)];
+        const imgMatches = [
+          ...userMsg.content.matchAll(/\[IMAGE_DATA:([^\]]+)\]/g),
+        ];
         if (imgMatches.length > 0) {
-          body.images = imgMatches.map(m => m[1]);
-          body.message = userMsg.content.replace(/\[IMAGE_DATA:[^\]]+\]/g, '').trim();
+          body.images = imgMatches.map((m) => m[1]);
+          body.message = userMsg.content
+            .replace(/\[IMAGE_DATA:[^\]]+\]/g, "")
+            .trim();
         }
       }
 
       const response = await fetch(url, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify(body),
         signal: controller.signal,
       });
 
-      if (!response.ok) throw new Error('Network response was not ok');
+      if (!response.ok) throw new Error("Network response was not ok");
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
 
       // 添加空 assistant 消息占位
-      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+      setMessages((prev) => [...prev, { role: "assistant", content: "" }]);
 
       while (reader) {
         const { done, value } = await reader.read();
         if (done) break;
 
         const chunk = decoder.decode(value);
-        const lines = chunk.split('\n').filter(line => line.startsWith('data: '));
+        const lines = chunk
+          .split("\n")
+          .filter((line) => line.startsWith("data: "));
 
         for (const line of lines) {
           const data = line.slice(6);
-          if (data === '[DONE]') continue;
+          if (data === "[DONE]") continue;
           try {
             const parsed = JSON.parse(data);
-            setMessages(prev => {
+            setMessages((prev) => {
               const newMessages = [...prev];
               const lastMsg = newMessages[newMessages.length - 1];
-              if (lastMsg.role === 'assistant') {
+              if (lastMsg.role === "assistant") {
                 if (parsed.content) lastMsg.content += parsed.content;
                 if (parsed.error) lastMsg.content = `❌ 错误：${parsed.error}`;
               }
               return newMessages;
             });
             if (parsed.title) {
-              setConversations(prev =>
-                prev.map(c => c.id === convId ? { ...c, title: parsed.title } : c)
+              setConversations((prev) =>
+                prev.map((c) =>
+                  c.id === convId ? { ...c, title: parsed.title } : c
+                )
               );
             }
           } catch (e) {
@@ -321,8 +366,8 @@ export default () => {
         }
       }
     } catch (error: any) {
-      if (error.name !== 'AbortError') {
-        antdMessage.error('发送失败，请检查网络和 API 配置');
+      if (error.name !== "AbortError") {
+        antdMessage.error("发送失败，请检查网络和 API 配置");
         console.error(error);
       }
     } finally {
@@ -337,8 +382,8 @@ export default () => {
     let convId = currentConvId;
     const shouldSummarizeTitle = messages.length === 0;
     if (!convId) {
-      const newConv = await createConversation('新对话');
-      setConversations(prev => [newConv, ...prev]);
+      const newConv = await createConversation("新对话");
+      setConversations((prev) => [newConv, ...prev]);
       convId = newConv.id;
       setCurrentConvId(convId);
     }
@@ -346,19 +391,23 @@ export default () => {
     // 构建用户消息内容（文字 + 图片标记）
     let content = inputText;
     if (pendingImages.length > 0) {
-      const base64s = await Promise.all(pendingImages.map(p => fileToBase64(p.file)));
-      content += '\n' + base64s.map(b => `[IMAGE_DATA:${b}]`).join('\n');
+      const base64s = await Promise.all(
+        pendingImages.map((p) => fileToBase64(p.file))
+      );
+      content += "\n" + base64s.map((b) => `[IMAGE_DATA:${b}]`).join("\n");
     }
 
-    const userMsg: API.Message = { role: 'user', content };
-    setMessages(prev => [...prev, userMsg]);
-    setInputText('');
+    const userMsg: API.Message = { role: "user", content };
+    setMessages((prev) => [...prev, userMsg]);
+    setInputText("");
     setPendingImages([]);
 
     await streamChat(convId, userMsg, false);
 
     if (shouldSummarizeTitle) {
-      summarizeConversationTitle(convId, selectedModel).catch((e) => console.error(e));
+      summarizeConversationTitle(convId, selectedModel).catch((e) =>
+        console.error(e)
+      );
       // 异步总结会有延迟，稍后刷新会话列表拿到新标题
       setTimeout(() => refreshConversations(), 2000);
     }
@@ -367,9 +416,12 @@ export default () => {
   const handleRegenerate = async () => {
     if (!currentConvId || loading) return;
     // 删除界面上最后一条 assistant 消息
-    setMessages(prev => {
+    setMessages((prev) => {
       const newMsgs = [...prev];
-      if (newMsgs.length > 0 && newMsgs[newMsgs.length - 1].role === 'assistant') {
+      if (
+        newMsgs.length > 0 &&
+        newMsgs[newMsgs.length - 1].role === "assistant"
+      ) {
         newMsgs.pop();
       }
       return newMsgs;
@@ -384,71 +436,95 @@ export default () => {
   const handleCopyMessage = (content: string) => {
     const displayContent = extractDisplayContent(content);
     navigator.clipboard.writeText(displayContent);
-    antdMessage.success('已复制到剪贴板');
+    antdMessage.success("已复制到剪贴板");
   };
 
   const handleImageAdd = (file: File) => {
     const preview = URL.createObjectURL(file);
-    setPendingImages(prev => [...prev, { file, preview }]);
+    setPendingImages((prev) => [...prev, { file, preview }]);
     return false; // 阻止 antd Upload 自动上传
   };
 
   const handleImageRemove = (index: number) => {
-    setPendingImages(prev => prev.filter((_, i) => i !== index));
+    setPendingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Sidebar 内容
   const siderContent = (
-    <div className={`sider-inner ${isDark ? 'dark' : ''}`}>
+    <div className={`sider-inner ${isDark ? "dark" : ""}`}>
       <div className="sider-top">
         <Button
           type="text"
           icon={<PlusOutlined />}
           onClick={handleCreateChat}
           className="new-chat-btn"
-          title={intl.formatMessage({ id: 'chat.new_chat' }) + ' (Ctrl+N)'}
+          title={intl.formatMessage({ id: "chat.new_chat" }) + " (Ctrl+N)"}
         >
-          {intl.formatMessage({ id: 'chat.new_chat' })}
+          {intl.formatMessage({ id: "chat.new_chat" })}
         </Button>
 
         <div className="conv-list">
-          <div className="conv-list-label">{intl.formatMessage({ id: 'menu.chat' })}</div>
-          {conversations.map(conv => (
+          <div className="conv-list-label">
+            {intl.formatMessage({ id: "menu.chat" })}
+          </div>
+          {conversations.map((conv) => (
             <div
               key={conv.id}
-              className={`conversation-item ${currentConvId === conv.id ? 'active' : ''}`}
+              className={`conversation-item ${
+                currentConvId === conv.id ? "active" : ""
+              }`}
               onClick={() => handleSelectConversation(conv.id)}
             >
               {editingTitleId === conv.id ? (
-                <div className="title-edit" onClick={e => e.stopPropagation()}>
+                <div
+                  className="title-edit"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <Input
                     size="small"
                     value={editingTitle}
-                    onChange={e => setEditingTitle(e.target.value)}
+                    onChange={(e) => setEditingTitle(e.target.value)}
                     onPressEnter={handleRenameConfirm}
                     autoFocus
                   />
-                  <Button type="text" size="small" icon={<CheckOutlined />} onClick={handleRenameConfirm} />
-                  <Button type="text" size="small" icon={<CloseOutlined />} onClick={() => setEditingTitleId(null)} />
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<CheckOutlined />}
+                    onClick={handleRenameConfirm}
+                  />
+                  <Button
+                    type="text"
+                    size="small"
+                    icon={<CloseOutlined />}
+                    onClick={() => setEditingTitleId(null)}
+                  />
                 </div>
               ) : (
                 <>
                   <span className="conv-title">{conv.title}</span>
                   <div className="conv-actions">
                     <Button
-                      type="text" size="small" icon={<EditOutlined />}
+                      type="text"
+                      size="small"
+                      icon={<EditOutlined />}
                       className="action-btn"
                       onClick={(e) => handleRenameStart(conv, e)}
                     />
                     <Popconfirm
-                      title="删除对话" description="确定要删除这个对话吗？"
-                      onConfirm={(e) => handleDeleteConversation(conv.id, e as any)}
+                      title="删除对话"
+                      description="确定要删除这个对话吗？"
+                      onConfirm={(e) =>
+                        handleDeleteConversation(conv.id, e as any)
+                      }
                       onCancel={(e) => (e as any)?.stopPropagation()}
                     >
                       <Button
-                        type="text" size="small" icon={<DeleteOutlined />}
+                        type="text"
+                        size="small"
+                        icon={<DeleteOutlined />}
                         className="action-btn delete-btn"
-                        onClick={e => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
                       />
                     </Popconfirm>
                   </div>
@@ -464,28 +540,33 @@ export default () => {
 
       <div className="sider-bottom">
         <Button
-          block icon={isDark ? <SunOutlined /> : <MoonOutlined />}
-          onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}
+          block
+          icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+          onClick={() => setTheme((t) => (t === "light" ? "dark" : "light"))}
           className="sider-action-btn"
         >
-          {isDark ? '浅色模式' : '深色模式'}
+          {isDark ? "浅色模式" : "深色模式"}
         </Button>
         <Button
-          block icon={<BarChartOutlined />}
+          block
+          icon={<BarChartOutlined />}
           onClick={() => setShowAccount(true)}
           className="sider-action-btn"
         >
-          {intl.formatMessage({ id: 'account.title' }).split(' ')[0]} {/* 简写 */}
+          {intl.formatMessage({ id: "account.title" }).split(" ")[0]}{" "}
+          {/* 简写 */}
         </Button>
         <Button
-          block icon={<SettingOutlined />}
+          block
+          icon={<SettingOutlined />}
           onClick={() => setShowSettings(true)}
           className="sider-action-btn"
         >
-          {intl.formatMessage({ id: 'chat.settings' })}
+          {intl.formatMessage({ id: "chat.settings" })}
         </Button>
         <Button
-          block icon={<LogoutOutlined />}
+          block
+          icon={<LogoutOutlined />}
           onClick={logout}
           className="sider-action-btn"
           danger
@@ -496,15 +577,19 @@ export default () => {
     </div>
   );
 
-  const lastAssistantIdx = [...messages].map(m => m.role).lastIndexOf('assistant');
+  const lastAssistantIdx = [...messages]
+    .map((m) => m.role)
+    .lastIndexOf("assistant");
 
   return (
     <ConfigProvider
       theme={{
-        algorithm: isDark ? antdTheme.darkAlgorithm : antdTheme.defaultAlgorithm,
+        algorithm: isDark
+          ? antdTheme.darkAlgorithm
+          : antdTheme.defaultAlgorithm,
       }}
     >
-      <Layout className={`chat-layout ${isDark ? 'dark' : ''}`}>
+      <Layout className={`chat-layout ${isDark ? "dark" : ""}`}>
         {/* Desktop Sider */}
         {!isMobile && (
           <Sider width={260} className="chat-sider">
@@ -533,24 +618,33 @@ export default () => {
               <div className="header-left">
                 {isMobile && (
                   <Button
-                    type="text" icon={<MenuOutlined />}
+                    type="text"
+                    icon={<MenuOutlined />}
                     onClick={() => setSiderVisible(true)}
                   />
                 )}
                 <span className="header-title">Timo</span>
                 {currentConvId && (
-                  <Tooltip title={currentSystemPrompt ? '编辑 System Prompt（已激活）' : '设置 System Prompt'}>
+                  <Tooltip
+                    title={
+                      currentSystemPrompt
+                        ? "编辑 System Prompt（已激活）"
+                        : "设置 System Prompt"
+                    }
+                  >
                     <Button
                       type="text"
                       size="small"
                       icon={<EditOutlined />}
                       onClick={() => setShowSystemPrompt(true)}
                       style={{
-                        color: currentSystemPrompt ? '#f59e0b' : undefined,
+                        color: currentSystemPrompt ? "#f59e0b" : undefined,
                         fontWeight: currentSystemPrompt ? 600 : undefined,
                       }}
                     >
-                      {currentSystemPrompt ? 'System Prompt ✦' : 'System Prompt'}
+                      {currentSystemPrompt
+                        ? "System Prompt ✦"
+                        : "System Prompt"}
                     </Button>
                   </Tooltip>
                 )}
@@ -559,17 +653,21 @@ export default () => {
                 {models.length >= 2 && (
                   <Tooltip title="多模型并行对比">
                     <Button
-                      type="text" size="small"
+                      type="text"
+                      size="small"
                       icon={<ThunderboltOutlined />}
                       onClick={() => setShowCompare(true)}
-                      style={{ color: '#f59e0b' }}
+                      style={{ color: "#f59e0b" }}
                     >
                       对比
                     </Button>
                   </Tooltip>
                 )}
                 <span className="header-username">{currentUser?.username}</span>
-                <Avatar style={{ backgroundColor: '#2563eb' }} icon={<UserOutlined />}>
+                <Avatar
+                  style={{ backgroundColor: "#2563eb" }}
+                  icon={<UserOutlined />}
+                >
                   {currentUser?.username?.[0]?.toUpperCase()}
                 </Avatar>
               </div>
@@ -585,15 +683,14 @@ export default () => {
                 </div>
               ) : (
                 messages.map((msg, idx) => (
-                  <div
-                    key={idx}
-                    className={`message-row ${msg.role}`}
-                  >
-                    {msg.role === 'assistant' && (
-                      <Avatar className="msg-avatar assistant-avatar" size={32}>AI</Avatar>
+                  <div key={idx} className={`message-row ${msg.role}`}>
+                    {msg.role === "assistant" && (
+                      <Avatar className="msg-avatar assistant-avatar" size={32}>
+                        AI
+                      </Avatar>
                     )}
                     <div className={`message-bubble ${msg.role}`}>
-                      {msg.role === 'user' ? (
+                      {msg.role === "user" ? (
                         <div className="user-content">
                           {hasImage(msg.content) && (
                             <div className="image-preview-row">📷 图片</div>
@@ -601,16 +698,31 @@ export default () => {
                           {extractDisplayContent(msg.content)}
                         </div>
                       ) : (
-                        <div className={loading && idx === lastAssistantIdx ? 'assistant-streaming' : ''}>
+                        <div
+                          className={
+                            loading && idx === lastAssistantIdx
+                              ? "assistant-streaming"
+                              : ""
+                          }
+                        >
                           {msg.content ? (
-                            <MarkdownRenderer content={msg.content} isDark={isDark} />
+                            <MarkdownRenderer
+                              content={msg.content}
+                              isDark={isDark}
+                            />
                           ) : (
                             <div className="typing-placeholder">
                               <span>AI 正在思考</span>
-                              <span className="typing-dots"><i /><i /><i /></span>
+                              <span className="typing-dots">
+                                <i />
+                                <i />
+                                <i />
+                              </span>
                             </div>
                           )}
-                          {loading && idx === lastAssistantIdx && <span className="stream-cursor" />}
+                          {loading && idx === lastAssistantIdx && (
+                            <span className="stream-cursor" />
+                          )}
                         </div>
                       )}
                     </div>
@@ -618,22 +730,26 @@ export default () => {
                     <div className={`msg-actions ${msg.role}`}>
                       <Tooltip title="复制">
                         <Button
-                          type="text" size="small"
+                          type="text"
+                          size="small"
                           icon={<CopyOutlined />}
                           onClick={() => handleCopyMessage(msg.content)}
                           className="msg-action-btn"
                         />
                       </Tooltip>
-                      {msg.role === 'assistant' && idx === lastAssistantIdx && !loading && (
-                        <Tooltip title="重新生成">
-                          <Button
-                            type="text" size="small"
-                            icon={<ReloadOutlined />}
-                            onClick={handleRegenerate}
-                            className="msg-action-btn"
-                          />
-                        </Tooltip>
-                      )}
+                      {msg.role === "assistant" &&
+                        idx === lastAssistantIdx &&
+                        !loading && (
+                          <Tooltip title="重新生成">
+                            <Button
+                              type="text"
+                              size="small"
+                              icon={<ReloadOutlined />}
+                              onClick={handleRegenerate}
+                              className="msg-action-btn"
+                            />
+                          </Tooltip>
+                        )}
                     </div>
                   </div>
                 ))
@@ -650,7 +766,9 @@ export default () => {
                     <div key={i} className="pending-image-item">
                       <img src={img.preview} alt="upload" />
                       <Button
-                        type="text" size="small" danger
+                        type="text"
+                        size="small"
+                        danger
                         icon={<CloseOutlined />}
                         className="remove-image-btn"
                         onClick={() => handleImageRemove(i)}
@@ -680,8 +798,8 @@ export default () => {
                 <Input
                   ref={inputRef as any}
                   value={inputText}
-                  onChange={e => setInputText(e.target.value)}
-                  onPressEnter={e => {
+                  onChange={(e) => setInputText(e.target.value)}
+                  onPressEnter={(e) => {
                     if (!e.shiftKey) {
                       e.preventDefault();
                       sendMessage();
@@ -696,7 +814,10 @@ export default () => {
                 <Select
                   value={selectedModel}
                   onChange={setSelectedModel}
-                  options={models.map(m => ({ label: m.display_name, value: m.model_id }))}
+                  options={models.map((m) => ({
+                    label: m.display_name,
+                    value: m.model_id,
+                  }))}
                   bordered={false}
                   style={{ minWidth: 120, maxWidth: 180 }}
                   disabled={loading}
@@ -706,7 +827,8 @@ export default () => {
                 {loading ? (
                   <Tooltip title="停止生成">
                     <Button
-                      danger shape="circle"
+                      danger
+                      shape="circle"
                       icon={<StopOutlined />}
                       onClick={handleStop}
                       className="send-btn"
@@ -714,7 +836,8 @@ export default () => {
                   </Tooltip>
                 ) : (
                   <Button
-                    type="primary" shape="circle"
+                    type="primary"
+                    shape="circle"
                     icon={<SendOutlined />}
                     disabled={!inputText.trim() && pendingImages.length === 0}
                     onClick={sendMessage}
@@ -722,7 +845,9 @@ export default () => {
                   />
                 )}
               </div>
-              <div className="input-hint">Timo 是一款 AI 工具，其回答未必正确无误。Shift+Enter 换行</div>
+              <div className="input-hint">
+                Timo 是一款 AI 工具，其回答未必正确无误。Shift+Enter 换行
+              </div>
             </div>
           </Content>
         </Layout>

@@ -15,9 +15,5 @@
     },
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "src",
-    ".umirc.ts",
-    "typings.d.ts"
-  ]
+  "include": ["src", ".umirc.ts", "typings.d.ts"]
 }
