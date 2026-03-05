@@ -10,9 +10,13 @@
 - **多模型切换**：每个 Endpoint 支持自定义模型列表，或使用内置预设模型列表。
 - **流式输出**：AI 回复以流式（SSE）方式逐字渲染，支持完整 Markdown 渲染。
 - **对话历史与设置**：自动保存所有会话与消息记录，支持修改系统提示词 (System Prompt) 及动态修改标题。
+- **消息编辑与重新生成**：支持随时编辑历史消息并截断重新生成后续对话。
+- **会话搜索**：侧边栏支持快速本地搜索历史对话。
+- **MCP Server 支持**：完整集成 Model Context Protocol (MCP)，支持连接本地（`stdio`）与远程（`sse`）MCP 插件。
+- **Function Calling 引擎**：内置支持递归函数调用（Tool Loop），自动将大语言模型与 MCP 插件结合，实现外部工具和数据的自动获取与执行。
 - **用户权限 & 用量统计**：提供团队角色 (Admin/User) 分别视图，提供全面用量统计和模型计费估算。
 - **平台化网关代理**：内置 `/v1` 兼容 API 代理点，可作为通用网关为其他 AI 开发工具（如 Cursor/Cline）提供统一转发和审计。
-- **数据本地化与安全性**：所有数据（用户、会话、API Key）保存在本地 SQLite 数据库，敏感信息经过 AES-256 加密，支持 JWT 和 HttpOnly Refresh Token 鉴权。
+- **数据本地化与安全性**：所有数据（用户、会话、API Key、MCP 配置）保存在本地 SQLite 数据库，敏感信息经过 AES-256 加密，支持 JWT 和 HttpOnly Refresh Token 鉴权。
 
 > 📖 关于该项目的完整演进路线与功能规划，请查看 [产品演进指南](./docs/timo_evolution_spec.md) 与 [架构任务拆解](./docs/project.md)。
 
@@ -149,16 +153,19 @@ timo/
 │   │   └── auth.js         # Token 鉴权中间件
 │   ├── models/
 │   │   └── database.js     # SQLite 数据库模型
+│   │   └── mcpManager.js   # MCP Server 客户端管理与通信
 │   └── routes/
 │       ├── auth.js         # 注册/登录接口
-│       ├── conversations.js # 会话与流式聊天接口
-│       └── endpoints.js    # Endpoint 管理接口
+│       ├── conversations.js # 会话、流式聊天与 Tool Loop 接口
+│       ├── endpoints.js    # Endpoint 管理接口
+│       └── mcp.js          # MCP 配置管理接口
 ├── src/
 │   ├── pages/
-│   │   ├── Chat/           # 聊天主页面
+│   │   ├── Chat/           # 聊天主页面（包含流式渲染、编辑、重生成等）
 │   │   └── Login/          # 登录页面
 │   ├── components/
-│   │   └── SettingsModal   # 设置弹窗组件
+│   │   ├── SettingsModal   # 设置弹窗组件
+│   │   └── McpModal        # MCP Server 配置组件
 │   ├── services/
 │   │   └── api.ts          # 前端 API 封装
 │   └── models/
