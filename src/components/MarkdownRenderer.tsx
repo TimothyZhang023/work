@@ -20,6 +20,7 @@ import remarkMath from "remark-math";
 interface MarkdownRendererProps {
   content: string;
   isDark?: boolean;
+  expandThinking?: boolean;
 }
 
 const escapeHtml = (value: string) =>
@@ -30,17 +31,18 @@ const escapeHtml = (value: string) =>
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 
-const toThinkDetails = (rawBody: string) => {
+const toThinkDetails = (rawBody: string, expandThinking = false) => {
   const body = String(rawBody || "").trim();
   if (!body) return "";
-  return `<details class="think-block"><summary>思考过程</summary><pre>${escapeHtml(
+  const openAttr = expandThinking ? " open" : "";
+  return `<details class="think-block"${openAttr}><summary>思考过程</summary><pre>${escapeHtml(
     body
   )}</pre></details>`;
 };
 
 const tryWrapImplicitThinking = (content: string) => {
   const trimmed = String(content || "").trim();
-  if (!trimmed || /<details class="think-block">/i.test(trimmed)) {
+  if (!trimmed || /<details class="think-block"(?:\s+open)?>/i.test(trimmed)) {
     return trimmed;
   }
 
@@ -87,31 +89,34 @@ const tryWrapImplicitThinking = (content: string) => {
   return `<think>\n${thinkBody}\n</think>\n\n${answerBody}`;
 };
 
-const normalizeThinkingBlocks = (rawContent: string) => {
+const normalizeThinkingBlocks = (
+  rawContent: string,
+  expandThinking = false
+) => {
   if (!rawContent) return rawContent;
 
   let normalized = rawContent;
 
   normalized = normalized.replace(
-    /```(?:think|thinking|reasoning|analysis)\s*([\s\S]*?)```/gi,
+    /```(?:think|thinking|reasoning|analysis)\s*([\s\S]*?)(?:```|$)/gi,
     (_, body) => `<think>\n${body}\n</think>`
   );
   normalized = normalized.replace(
-    /<(thinking|reasoning|analysis)(?:\s[^>]*)?>([\s\S]*?)<\/\1>/gi,
+    /<(thinking|reasoning|analysis)(?:\s[^>]*)?>([\s\S]*?)(?:<\/\1>|$)/gi,
     (_, _tag, body) => `<think>\n${body}\n</think>`
   );
   normalized = normalized.replace(
-    /\[(?:think|thinking|reasoning|analysis)\]([\s\S]*?)\[\/(?:think|thinking|reasoning|analysis)\]/gi,
+    /\[(?:think|thinking|reasoning|analysis)\]([\s\S]*?)(?:\[\/(?:think|thinking|reasoning|analysis)\]|$)/gi,
     (_, body) => `<think>\n${body}\n</think>`
   );
   normalized = normalized.replace(
-    /<think(?:\s[^>]*)?>([\s\S]*?)<\/think>/gi,
-    (_, body) => toThinkDetails(body)
+    /<think(?:\s[^>]*)?>([\s\S]*?)(?:<\/think>|$)/gi,
+    (_, body) => toThinkDetails(body, expandThinking)
   );
 
   normalized = tryWrapImplicitThinking(normalized).replace(
-    /<think(?:\s[^>]*)?>([\s\S]*?)<\/think>/gi,
-    (_, body) => toThinkDetails(body)
+    /<think(?:\s[^>]*)?>([\s\S]*?)(?:<\/think>|$)/gi,
+    (_, body) => toThinkDetails(body, expandThinking)
   );
 
   return normalized;
@@ -210,10 +215,11 @@ function CodeBlock({
 export const MarkdownRenderer = ({
   content,
   isDark = false,
+  expandThinking = false,
 }: MarkdownRendererProps) => {
   const normalizedContent = useMemo(
-    () => normalizeThinkingBlocks(content),
-    [content]
+    () => normalizeThinkingBlocks(content, expandThinking),
+    [content, expandThinking]
   );
 
   return (

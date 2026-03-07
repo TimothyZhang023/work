@@ -1,4 +1,4 @@
-# Timo — 产品演进 Spec
+# cowhouse (CW) — 产品演进 Spec
 
 > 最后更新：2026-03-03 ｜ 基于对项目全部源码的逐行审读
 
@@ -122,7 +122,7 @@
 
 #### 3.3 🔌 API & 集成
 
-- **OpenAI 兼容 API Server**：Timo 作为 API 代理，对外暴露标准 OpenAI 接口
+- **OpenAI 兼容 API Server**：cowhouse 作为 API 代理，对外暴露标准 OpenAI 接口
   - 下游应用（如 Cursor、Cline、VS Code 插件）可直接连接
   - 中间层实现负载、鉴权、审计
 - **Webhook 通知**：对话完成后推送至飞书/钉钉/Slack
@@ -184,7 +184,7 @@
 
 ## 三、竞品对标
 
-| 功能            | ChatGPT | Claude      | Gemini Web | Open WebUI | LobeChat | **Timo (目标)** |
+| 功能            | ChatGPT | Claude      | Gemini Web | Open WebUI | LobeChat | **cowhouse (目标)** |
 | --------------- | ------- | ----------- | ---------- | ---------- | -------- | --------------- |
 | 多 Endpoint     | ❌      | ❌          | ❌         | ✅         | ✅       | ✅              |
 | 多模型切换      | ✅      | ✅          | ✅         | ✅         | ✅       | ✅              |
@@ -254,4 +254,4 @@
 
 ---
 
-> **目标定位**：Timo 的独特定位是 **私有化可部署的全功能 AI 聊天客户端**，对标 [Open WebUI](https://github.com/open-webui/open-webui) / [LobeChat](https://github.com/lobehub/lobe-chat)，但更轻量、更易于二次开发。核心竞争力是 **多 Endpoint 聚合 + 本地化部署 + 扩展性**。
+> **目标定位**：cowhouse 的独特定位是 **私有化可部署的全功能 AI 助理工作台**，对标 [Open WebUI](https://github.com/open-webui/open-webui) / [LobeChat](https://github.com/lobehub/lobe-chat)，但更轻量、更易于二次开发。核心竞争力是 **多 Endpoint 聚合 + 本地化部署 + 扩展性**。

@@ -30,7 +30,7 @@ export async function getConnectedMcpClient(serverConfig) {
   const connectPromise = (async () => {
     const client = new Client(
       {
-        name: `timo-client-${serverConfig.name}`,
+        name: `cowhouse-client-${serverConfig.name}`,
         version: "1.0.0",
       },
       {

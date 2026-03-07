@@ -1,16 +1,16 @@
 services:
-  timo:
+  cowhouse:
     build:
       context: .
       dockerfile: Dockerfile
-    image: timo:latest
-    container_name: timo
+    image: cowhouse:latest
+    container_name: cowhouse
     restart: unless-stopped
     ports:
       - "8000:8000"
     volumes:
       # 持久化 SQLite 数据库（用户、会话、API Key 等）
-      - timo_data:/app/data
+      - cowhouse_data:/app/data
     environment:
       - NODE_ENV=production
       - PORT=8000
@@ -22,5 +22,5 @@ services:
       start_period: 10s
 
 volumes:
-  timo_data:
+  cowhouse_data:
     driver: local

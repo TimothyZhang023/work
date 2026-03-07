@@ -62,25 +62,47 @@ import "./index.css";
 const { Sider, Content } = Layout;
 const { TextArea } = Input;
 
+const STORAGE_KEYS = {
+  theme: "cw-theme",
+  legacyTheme: "timo-theme",
+  temperature: "cw.temperature",
+  legacyTemperature: "timo.temperature",
+  topP: "cw.top_p",
+  legacyTopP: "timo.top_p",
+  maxTokens: "cw.max_tokens",
+  legacyMaxTokens: "timo.max_tokens",
+  selectedModelPrefix: "cw.selected_model.",
+  legacySelectedModelPrefix: "timo.selected_model.",
+};
+
 // 从 localStorage 获取/保存主题
 const getStoredTheme = (): "light" | "dark" => {
-  const saved = localStorage.getItem("timo-theme");
+  const saved =
+    localStorage.getItem(STORAGE_KEYS.theme) ||
+    localStorage.getItem(STORAGE_KEYS.legacyTheme);
   if (saved === "dark" || saved === "light") return saved;
   return window.matchMedia("(prefers-color-scheme: dark)").matches
     ? "dark"
     : "light";
 };
 
-const getStoredNumber = (key: string, fallback: number): number => {
-  const stored = Number(localStorage.getItem(key));
+const getStoredNumber = (
+  key: string,
+  fallback: number,
+  legacyKey?: string
+): number => {
+  const raw =
+    localStorage.getItem(key) ??
+    (legacyKey ? localStorage.getItem(legacyKey) : null);
+  const stored = Number(raw);
   return Number.isFinite(stored) ? stored : fallback;
 };
 
 const clamp = (value: number, min: number, max: number) =>
   Math.min(max, Math.max(min, value));
 
-const getStoredString = (key: string): string => {
-  return localStorage.getItem(key) || "";
+const getStoredString = (key: string, legacyKey?: string): string => {
+  return localStorage.getItem(key) || (legacyKey ? localStorage.getItem(legacyKey) || "" : "");
 };
 
 const getStoredBoolean = (key: string, fallback: boolean): boolean => {
@@ -91,7 +113,10 @@ const getStoredBoolean = (key: string, fallback: boolean): boolean => {
 };
 
 const getModelStorageKey = (endpointId: number | null) =>
-  endpointId ? `timo.selected_model.${endpointId}` : "";
+  endpointId ? `${STORAGE_KEYS.selectedModelPrefix}${endpointId}` : "";
+
+const getLegacyModelStorageKey = (endpointId: number | null) =>
+  endpointId ? `${STORAGE_KEYS.legacySelectedModelPrefix}${endpointId}` : "";
 
 // 将图片文件转为 base64
 const fileToBase64 = (file: File): Promise<string> =>
@@ -191,13 +216,29 @@ export default () => {
 
   // 生成参数（SOTA 级可控性）
   const [temperature, setTemperature] = useState<number>(() =>
-    clamp(getStoredNumber("timo.temperature", 0.7), 0, 2)
+    clamp(
+      getStoredNumber(
+        STORAGE_KEYS.temperature,
+        0.7,
+        STORAGE_KEYS.legacyTemperature
+      ),
+      0,
+      2
+    )
   );
   const [topP, setTopP] = useState<number>(() =>
-    clamp(getStoredNumber("timo.top_p", 1), 0, 1)
+    clamp(
+      getStoredNumber(STORAGE_KEYS.topP, 1, STORAGE_KEYS.legacyTopP),
+      0,
+      1
+    )
   );
   const [maxTokens, setMaxTokens] = useState<number>(() => {
-    const stored = getStoredNumber("timo.max_tokens", -1);
+    const stored = getStoredNumber(
+      STORAGE_KEYS.maxTokens,
+      -1,
+      STORAGE_KEYS.legacyMaxTokens
+    );
     if (stored === -1) return -1;
     return clamp(stored, 256, 8192);
   });
@@ -233,6 +274,7 @@ export default () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const currentConvIdRef = useRef<string | null>(null);
   const shouldRefocusInputRef = useRef(false);
   const streamBufferRef = useRef("");
   const streamErrorRef = useRef<string | null>(null);
@@ -252,7 +294,7 @@ export default () => {
   // 主题持久化
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("timo-theme", theme);
+    localStorage.setItem(STORAGE_KEYS.theme, theme);
   }, [theme]);
 
   useEffect(() => {
@@ -261,21 +303,32 @@ export default () => {
 
   // 生成参数持久化
   useEffect(() => {
-    localStorage.setItem("timo.temperature", String(temperature));
-    localStorage.setItem("timo.top_p", String(topP));
-    localStorage.setItem("timo.max_tokens", String(maxTokens));
+    localStorage.setItem(STORAGE_KEYS.temperature, String(temperature));
+    localStorage.setItem(STORAGE_KEYS.topP, String(topP));
+    localStorage.setItem(STORAGE_KEYS.maxTokens, String(maxTokens));
   }, [temperature, topP, maxTokens]);
 
   useEffect(() => {
     const storageKey = getModelStorageKey(defaultEndpointId);
+    const legacyStorageKey = getLegacyModelStorageKey(defaultEndpointId);
     if (!storageKey) return;
 
     if (selectedModel) {
       localStorage.setItem(storageKey, selectedModel);
+      if (legacyStorageKey) {
+        localStorage.removeItem(legacyStorageKey);
+      }
     } else {
       localStorage.removeItem(storageKey);
+      if (legacyStorageKey) {
+        localStorage.removeItem(legacyStorageKey);
+      }
     }
   }, [defaultEndpointId, selectedModel]);
+
+  useEffect(() => {
+    currentConvIdRef.current = currentConvId;
+  }, [currentConvId]);
 
   // 登录检查 & 初始化
   useEffect(() => {
@@ -342,7 +395,8 @@ export default () => {
         endpoints.find((endpoint) => !!endpoint.is_default) || null;
       const nextDefaultEndpointId = defaultEndpoint?.id ?? null;
       const storedModel = getStoredString(
-        getModelStorageKey(nextDefaultEndpointId)
+        getModelStorageKey(nextDefaultEndpointId),
+        getLegacyModelStorageKey(nextDefaultEndpointId)
       );
 
       setConversations(convs);
@@ -570,6 +624,29 @@ export default () => {
     []
   );
 
+  const flushSseRemainder = useCallback(
+    (
+      handlers: {
+        onData: (parsed: any) => void;
+      }
+    ) => {
+      if (!sseRemainderRef.current.trim()) return;
+      processSseChunk("\n", handlers);
+    },
+    [processSseChunk]
+  );
+
+  const syncConversationMessages = useCallback(async (convId: string) => {
+    try {
+      const latest = await getMessages(convId);
+      if (currentConvIdRef.current === convId) {
+        setMessages(latest);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
+
   const handleCreateChat = async () => {
     try {
       const newConv = await createConversation("新对话");
@@ -757,6 +834,39 @@ export default () => {
           },
         });
       }
+      flushSseRemainder({
+        onData: (parsed) => {
+          if (parsed.type === "tool_running") {
+            flushStreamBuffer();
+            setMessages((prev) => {
+              const next = [
+                ...prev,
+                {
+                  role: "tool" as const,
+                  content: `🔧 正在执行工具：${parsed.tool_name}...`,
+                },
+                { role: "assistant" as const, content: "" },
+              ];
+              streamTargetIndexRef.current = next.length - 1;
+              return next;
+            });
+            sawAssistantContent = false;
+            sawAssistantError = false;
+          } else {
+            if (parsed.content) sawAssistantContent = true;
+            if (parsed.error) sawAssistantError = true;
+            appendAssistantChunk(parsed.content, parsed.error);
+          }
+
+          if (parsed.title) {
+            setConversations((prev) =>
+              prev.map((c) =>
+                c.id === convId ? { ...c, title: parsed.title } : c
+              )
+            );
+          }
+        },
+      });
       flushPendingStreamSegmentsNow();
       flushStreamBuffer();
       if (!sawAssistantContent && !sawAssistantError) {
@@ -783,6 +893,9 @@ export default () => {
       abortControllerRef.current = null;
       streamTargetIndexRef.current = null;
       sseRemainderRef.current = "";
+      if (!controller.signal.aborted) {
+        await syncConversationMessages(convId);
+      }
     }
   };
 
@@ -955,6 +1068,39 @@ export default () => {
           },
         });
       }
+      flushSseRemainder({
+        onData: (parsed) => {
+          if (parsed.type === "tool_running") {
+            flushStreamBuffer();
+            setMessages((prev) => {
+              const next = [
+                ...prev,
+                {
+                  role: "tool" as const,
+                  content: `🔧 正在执行工具：${parsed.tool_name}...`,
+                },
+                { role: "assistant" as const, content: "" },
+              ];
+              streamTargetIndexRef.current = next.length - 1;
+              return next;
+            });
+            sawAssistantContent = false;
+            sawAssistantError = false;
+          } else {
+            if (parsed.content) sawAssistantContent = true;
+            if (parsed.error) sawAssistantError = true;
+            appendAssistantChunk(parsed.content, parsed.error);
+          }
+
+          if (parsed.title) {
+            setConversations((prev) =>
+              prev.map((c) =>
+                c.id === currentConvId ? { ...c, title: parsed.title } : c
+              )
+            );
+          }
+        },
+      });
       flushPendingStreamSegmentsNow();
       flushStreamBuffer();
       if (!sawAssistantContent && !sawAssistantError) {
@@ -982,6 +1128,9 @@ export default () => {
       streamTargetIndexRef.current = null;
       sseRemainderRef.current = "";
       refreshConversations();
+      if (!controller.signal.aborted && currentConvId) {
+        await syncConversationMessages(currentConvId);
+      }
     }
   };
 
@@ -1394,7 +1543,11 @@ export default () => {
                                   className="stream-fade-shell"
                                   data-streaming={loading && idx === lastAssistantIdx}
                                 >
-                                  <MarkdownRenderer content={msg.content} isDark={isDark} />
+                                  <MarkdownRenderer
+                                    content={msg.content}
+                                    isDark={isDark}
+                                    expandThinking={loading && idx === lastAssistantIdx}
+                                  />
                                 </div>
                               ) : (
                                 <>
@@ -1664,6 +1817,7 @@ export default () => {
             setMessages([]);
             setSearchQuery("");
           }}
+          onModelsChanged={loadInitData}
         />
         <SystemPromptModal
           open={showSystemPrompt}

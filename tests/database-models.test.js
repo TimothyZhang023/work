@@ -76,7 +76,7 @@ describe("Database Models - API Keys", () => {
     const user = createUser(`user_${Date.now()}_api`, "password123");
 
     const newKey = createApiKey(user.uid, "My test key");
-    expect(newKey.key.startsWith("timo-")).toBe(true);
+    expect(newKey.key.startsWith("cw-")).toBe(true);
 
     const keys = listApiKeys(user.uid);
     expect(keys).toHaveLength(1);

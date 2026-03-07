@@ -6,7 +6,7 @@ import crypto from "node:crypto";
 
 const dbPath = path.join(
   os.tmpdir(),
-  `timo-vitest-${process.pid}-${crypto.randomUUID()}.db`
+  `cowhouse-vitest-${process.pid}-${crypto.randomUUID()}.db`
 );
 
 process.env.DB_PATH = dbPath;

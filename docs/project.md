@@ -1,4 +1,4 @@
-# Timo — 产品系统分析文档 (Project Spec)
+# cowhouse (CW) — 产品系统分析文档 (Project Spec)
 
 > 最后更新：2026-03-03 ｜ 状态：演进中
 
@@ -6,7 +6,7 @@
 
 ## 一、项目概述
 
-**Timo** 是一款**私有化可部署的全功能 AI 聊天客户端**。定位对标 Open WebUI / LobeChat，但更轻量、更易于二次开发。核心竞争力是：
+**cowhouse (CW)** 是一款**私有化可部署的全功能 AI 助理工作台**。定位对标 Open WebUI / LobeChat，但更轻量、更易于二次开发。核心竞争力是：
 
 - **多 Endpoint 聚合**：管理多个大模型 API（OpenAI / Gemini / Claude / 任意兼容接口）
 - **本地化部署**：SQLite + Docker，数据全部留在用户自己的服务器
@@ -112,7 +112,7 @@
 
 ## 四、竞品对标
 
-| 功能        | ChatGPT | Claude | Open WebUI | LobeChat | **Timo 目标** |
+| 功能        | ChatGPT | Claude | Open WebUI | LobeChat | **cowhouse 目标** |
 | ----------- | ------- | ------ | ---------- | -------- | ------------- |
 | 多 Endpoint | ❌      | ❌     | ✅         | ✅       | ✅            |
 | 私有化部署  | ❌      | ❌     | ✅         | ✅       | ✅            |

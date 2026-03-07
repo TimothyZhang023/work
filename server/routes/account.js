@@ -38,8 +38,8 @@ router.get("/summary", (req, res) => {
 
 router.delete("/history", (req, res) => {
   try {
-    const deletedCount = clearAllHistory(req.uid);
-    res.json({ success: true, deleted_conversations: deletedCount });
+    const deleted = clearAllHistory(req.uid);
+    res.json({ success: true, ...deleted });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

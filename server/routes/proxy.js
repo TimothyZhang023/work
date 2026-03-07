@@ -1,11 +1,11 @@
 /**
  * OpenAI 兼容 API 代理
  *
- * 让外部工具（Cursor / Cline / VS Code 插件 / Open WebUI）连接 Timo，
- * 使用 Timo 管理的 API Endpoint 和模型。
+ * 让外部工具（Cursor / Cline / VS Code 插件 / Open WebUI）连接 cowhouse，
+ * 使用 cowhouse 管理的 API Endpoint 和模型。
  *
- * 鉴权：Bearer <Timo API Key>（在用量统计 → API Keys 中创建）
- * Base URL: http://your-timo-host:8000/v1
+ * 鉴权：Bearer <cowhouse API Key>（在用量统计 → API Keys 中创建）
+ * Base URL: http://your-cowhouse-host:8000/v1
  *
  * 支持接口：
  *   GET  /v1/models              - 列出可用模型
@@ -31,7 +31,7 @@ function proxyAuth(req, res, next) {
   if (!token) {
     return res.status(401).json({
       error: {
-        message: "API Key 不能为空，请在 Timo 的设置 → API Keys 中创建",
+        message: "API Key 不能为空，请在 cowhouse 的设置 → API Keys 中创建",
         type: "auth_error",
       },
     });
@@ -82,7 +82,7 @@ router.get("/models", (req, res) => {
       id: m.model_id,
       object: "model",
       created: Math.floor(Date.now() / 1000),
-      owned_by: "timo",
+      owned_by: "cowhouse",
     }));
     res.json({ object: "list", data: models });
   } catch (error) {
@@ -121,7 +121,7 @@ router.post("/chat/completions", async (req, res) => {
     if (!endpoints.length) {
       return res.status(400).json({
         error: {
-          message: "请先在 Timo 中配置 API Endpoint",
+          message: "请先在 cowhouse 中配置 API Endpoint",
           type: "invalid_request_error",
         },
       });
@@ -149,6 +149,7 @@ router.post("/chat/completions", async (req, res) => {
           res.setHeader("Content-Type", "text/event-stream");
           res.setHeader("Cache-Control", "no-cache");
           res.setHeader("Transfer-Encoding", "chunked");
+          res.setHeader("x-cw-endpoint", ep.name);
           res.setHeader("x-timo-endpoint", ep.name);
 
           params.stream_options = { include_usage: true };
@@ -179,6 +180,7 @@ router.post("/chat/completions", async (req, res) => {
         } else {
           // 非流式
           const completion = await client.chat.completions.create(params);
+          res.setHeader("x-cw-endpoint", ep.name);
           res.setHeader("x-timo-endpoint", ep.name);
           res.json(completion);
 

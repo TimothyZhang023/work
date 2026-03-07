@@ -190,26 +190,9 @@ try {
   );
 }
 
-// 全局预设模型列表
+// 全局预设模型列表（仅作兜底，建议用户通过"同步模型"拉取真实列表）
 export const PRESET_MODELS = [
-  { model_id: "gemini-3-flash", display_name: "Gemini 3 Flash" },
-  { model_id: "gemini-3-pro-high", display_name: "Gemini 3 Pro High" },
-  { model_id: "gemini-3-pro-low", display_name: "Gemini 3 Pro Low" },
-  { model_id: "gemini-3-pro-image", display_name: "Gemini 3 Pro (Image)" },
-  { model_id: "gemini-2.5-flash", display_name: "Gemini 2.5 Flash" },
-  {
-    model_id: "gemini-2.5-flash-thinking",
-    display_name: "Gemini 2.5 Flash (Thinking)",
-  },
-  { model_id: "claude-sonnet-4-5", display_name: "Claude 4.5 Sonnet" },
-  {
-    model_id: "claude-sonnet-4-5-thinking",
-    display_name: "Claude 4.5 Sonnet (Thinking)",
-  },
-  {
-    model_id: "claude-opus-4-5-thinking",
-    display_name: "Claude 4.5 Opus (Thinking)",
-  },
+  { model_id: "default", display_name: "Default" },
 ];
 
 // 运行时迁移：添加 role 列（已存在时忽略）
@@ -377,11 +360,20 @@ export function deleteConversation(id, uid) {
 
 export function clearAllHistory(uid) {
   const tx = db.transaction(() => {
-    db.prepare("DELETE FROM messages WHERE uid = ?").run(uid);
-    const result = db
+    const deletedMessages = db
+      .prepare("DELETE FROM messages WHERE uid = ?")
+      .run(uid).changes;
+    const deletedConversations = db
       .prepare("DELETE FROM conversations WHERE uid = ?")
-      .run(uid);
-    return result.changes;
+      .run(uid).changes;
+    const deletedUsageLogs = db
+      .prepare("DELETE FROM usage_logs WHERE uid = ?")
+      .run(uid).changes;
+    return {
+      deleted_messages: deletedMessages,
+      deleted_conversations: deletedConversations,
+      deleted_usage_logs: deletedUsageLogs,
+    };
   });
   return tx();
 }
@@ -771,7 +763,7 @@ function hashKey(key) {
 }
 
 export function createApiKey(uid, name) {
-  const rawKey = "timo-" + randomBytes(24).toString("base64url");
+  const rawKey = "cw-" + randomBytes(24).toString("base64url");
   const prefix = rawKey.slice(0, 12);
   const hash = hashKey(rawKey);
   db.prepare(
@@ -873,7 +865,10 @@ export async function triggerWebhooks(event, payload) {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          ...(hook.secret && { "X-Timo-Secret": hook.secret }),
+          ...(hook.secret && {
+            "X-CW-Secret": hook.secret,
+            "X-Timo-Secret": hook.secret,
+          }),
         },
         body: JSON.stringify({
           event,

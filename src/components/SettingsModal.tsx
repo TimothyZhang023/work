@@ -23,7 +23,7 @@ import {
   ProFormText,
   ProList,
 } from "@ant-design/pro-components";
-import { Button, Form, message, Modal, Space, Tag } from "antd";
+import { Button, Form, message, Modal, Popconfirm, Space, Tag } from "antd";
 import { useEffect, useState } from "react";
 import { McpModal } from "./McpModal";
 
@@ -31,10 +31,12 @@ export const SettingsModal = ({
   open,
   onOpenChange,
   onHistoryCleared,
+  onModelsChanged,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onHistoryCleared?: () => void;
+  onModelsChanged?: () => void;
 }) => {
   const providerOptions = [
     { label: "OpenAI Compatible", value: "openai_compatible" },
@@ -95,6 +97,7 @@ export const SettingsModal = ({
       const result = await syncEndpointModels(selectedEndpointForModels.id);
       setModels(result.models || []);
       message.success(`已同步 ${result.count || 0} 个模型`);
+      onModelsChanged?.();
     } catch (error: any) {
       const msg =
         error?.response?.data?.error ||
@@ -124,6 +127,7 @@ export const SettingsModal = ({
       await deleteEndpoint(id);
       message.success("删除成功");
       loadEndpoints();
+      onModelsChanged?.();
     } catch (error) {
       message.error("删除失败");
     }
@@ -134,6 +138,7 @@ export const SettingsModal = ({
       await setDefaultEndpoint(id);
       message.success("设置成功");
       loadEndpoints();
+      onModelsChanged?.();
     } catch (error) {
       message.error("设置失败");
     }
@@ -230,8 +235,15 @@ export const SettingsModal = ({
             message.success("保存成功");
             setEditingEndpoint(null);
             loadEndpoints();
+            onModelsChanged?.();
             return true;
-          } catch (error) {
+          } catch (error: any) {
+            const msg =
+              error?.response?.data?.error ||
+              error?.data?.error ||
+              error?.message ||
+              "保存失败";
+            message.error(msg);
             return false;
           }
         }}
@@ -310,6 +322,7 @@ export const SettingsModal = ({
               message.success("添加成功");
               newModelForm.resetFields();
               loadModels(selectedEndpointForModels.id);
+              onModelsChanged?.();
             } catch (error) {
               message.error("添加失败");
             }
@@ -352,6 +365,7 @@ export const SettingsModal = ({
                       message.success("删除成功");
                       if (selectedEndpointForModels)
                         loadModels(selectedEndpointForModels.id);
+                      onModelsChanged?.();
                     } catch (e) {
                       message.error("删除失败");
                     }
@@ -392,44 +406,43 @@ export const SettingsModal = ({
               删除当前账户的所有对话和消息，此操作不可恢复
             </div>
           </div>
-          <Button
-            danger
-            icon={<DeleteOutlined />}
-            onClick={() => {
-              Modal.confirm({
-                title: "确认清空所有历史消息？",
-                icon: <ExclamationCircleOutlined />,
-                content:
-                  "此操作将永久删除你的所有对话和消息，无法恢复。确定要继续吗？",
-                okText: "确认清空",
-                okType: "danger",
-                cancelText: "取消",
-                onOk: async () => {
-                  try {
-                    const result = await clearAllHistory();
-                    if (!result?.success) {
-                      throw new Error("清空失败");
-                    }
-                    message.success(
-                      `已清空 ${result.deleted_conversations || 0} 个对话`
-                    );
-                    window.dispatchEvent(new CustomEvent("cw.history.cleared"));
-                    onHistoryCleared?.();
-                    onOpenChange(false);
-                  } catch (error: any) {
-                    const msg =
-                      error?.response?.data?.error ||
-                      error?.data?.error ||
-                      error?.message ||
-                      "清空失败，请重试";
-                    message.error(msg);
-                  }
-                },
-              });
+          <Popconfirm
+            title="确认清空所有历史消息？"
+            description="此操作将永久删除你的所有对话和消息，无法恢复。确定要继续吗？"
+            icon={<ExclamationCircleOutlined style={{ color: "red" }} />}
+            okText="确认清空"
+            cancelText="取消"
+            okButtonProps={{ danger: true }}
+            onConfirm={async () => {
+              try {
+                const result = await clearAllHistory();
+                if (!result?.success) {
+                  throw new Error("清空失败");
+                }
+                setSelectedEndpointForModels(null);
+                setModels([]);
+                message.success(
+                  `已清空 ${result.deleted_conversations || 0} 个对话，${
+                    result.deleted_messages || 0
+                  } 条消息`
+                );
+                window.dispatchEvent(new CustomEvent("cw.history.cleared"));
+                onHistoryCleared?.();
+                onOpenChange(false);
+              } catch (error: any) {
+                const msg =
+                  error?.response?.data?.error ||
+                  error?.data?.error ||
+                  error?.message ||
+                  "清空失败，请重试";
+                message.error(msg);
+              }
             }}
           >
-            清空所有消息
-          </Button>
+            <Button danger htmlType="button" icon={<DeleteOutlined />}>
+              清空所有消息
+            </Button>
+          </Popconfirm>
         </div>
       </div>
     </ModalForm>

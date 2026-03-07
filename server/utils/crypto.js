@@ -2,7 +2,7 @@ import crypto from "crypto";
 
 // 建议从环境变量获取，如果没有则使用固定默认值（不推荐生产环境这样做，但作为演进步骤先实现逻辑）
 const ENCRYPTION_KEY =
-  process.env.ENCRYPTION_KEY || "timo-api-key-secret-32-chars-!!!"; // 必须是 32 位
+  process.env.ENCRYPTION_KEY || "cowhouse-api-key-secret-32-chars"; // 必须是 32 位
 const IV_LENGTH = 16;
 
 export function encrypt(text) {

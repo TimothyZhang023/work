@@ -198,7 +198,12 @@ export async function getAvailableModels() {
 
 // Clear All History
 export async function clearAllHistory() {
-  return request<{ success: boolean; deleted_conversations: number }>(
+  return request<{
+    success: boolean;
+    deleted_conversations: number;
+    deleted_messages: number;
+    deleted_usage_logs: number;
+  }>(
     "/api/account/history",
     {
       method: "DELETE",

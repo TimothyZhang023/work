@@ -60,7 +60,8 @@ export default () => {
     getStoredBool("cw.module.expanded", true)
   );
   const [theme, setTheme] = useState<"light" | "dark">(() => {
-    const saved = localStorage.getItem("timo-theme");
+    const saved =
+      localStorage.getItem("cw-theme") || localStorage.getItem("timo-theme");
     if (saved === "dark" || saved === "light") return saved;
     return "light";
   });
@@ -83,7 +84,7 @@ export default () => {
   }, [moduleExpanded]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
-    localStorage.setItem("timo-theme", theme);
+    localStorage.setItem("cw-theme", theme);
   }, [theme]);
   useEffect(() => {
     if (!isLoggedIn) return;
@@ -186,30 +187,28 @@ export default () => {
         </aside>
 
         <main className="cw-dashboard-main-wrap">
-          <header className="cw-dashboard-header">
+          <section className="cw-dashboard-hero">
             <div>
-              <h1>cowhouse</h1>
-              <p>个人助理 Agent 工作台</p>
+              <div className="cw-dashboard-eyebrow">Dashboard</div>
+              <h1>欢迎回来，{currentUser?.username || "CW 用户"}</h1>
+              <p>
+                cowhouse 是你的个人助理 Agent 工作台，当前已启用对话模块、统一模型接入和用量统计。
+              </p>
             </div>
-            <div className="cw-user">
-              <span>{currentUser?.username}</span>
-              <Avatar style={{ backgroundColor: "#2563eb" }}>
+            <div className="cw-user-card">
+              <Avatar size={48} style={{ backgroundColor: "#2563eb" }}>
                 {currentUser?.username?.[0]?.toUpperCase()}
               </Avatar>
+              <div>
+                <div className="cw-user-name">{currentUser?.username}</div>
+                <div className="cw-user-desc">当前登录账号</div>
+              </div>
             </div>
-          </header>
+          </section>
 
           <section className="cw-dashboard-main">
             <Row gutter={[16, 16]}>
-              <Col xs={24} md={12} lg={10}>
-                <Card className="cw-module-card" hoverable onClick={() => history.push("/chat")}>
-                  <MessageOutlined className="cw-module-icon" />
-                  <h3>对话</h3>
-                  <p>进入多模型对话模块，支持流式回复、模型切换与会话管理。</p>
-                </Card>
-              </Col>
-
-              <Col xs={24} md={12} lg={10}>
+              <Col xs={24}>
                 <Card className="cw-module-card">
                   <div className="cw-usage-header">
                     <div>
@@ -272,6 +271,26 @@ export default () => {
                       </div>
                     </div>
                   )}
+                </Card>
+              </Col>
+
+              <Col xs={24} md={12}>
+                <Card
+                  className="cw-module-card"
+                  hoverable
+                  onClick={() => history.push("/chat")}
+                >
+                  <MessageOutlined className="cw-module-icon" />
+                  <h3>对话</h3>
+                  <p>多模型流式对话、会话管理、System Prompt 和模型切换都在这里。</p>
+                </Card>
+              </Col>
+
+              <Col xs={24} md={12}>
+                <Card className="cw-module-card">
+                  <BarChartOutlined className="cw-module-icon" />
+                  <h3>更多模块</h3>
+                  <p>后续扩展知识库、任务流和工具编排等能力，统一收敛在 CW 工作台。</p>
                 </Card>
               </Col>
             </Row>

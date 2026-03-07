@@ -1,7 +1,8 @@
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = process.env.JWT_SECRET || "timo-access-secret-!!!";
-const REFRESH_SECRET = process.env.REFRESH_SECRET || "timo-refresh-secret-!!!";
+const JWT_SECRET = process.env.JWT_SECRET || "cowhouse-access-secret-!!!";
+const REFRESH_SECRET =
+  process.env.REFRESH_SECRET || "cowhouse-refresh-secret-!!!";
 
 export function generateAccessToken(user) {
   return jwt.sign(

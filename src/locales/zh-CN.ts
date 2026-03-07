@@ -1,5 +1,5 @@
 export default {
-  "app.title": "Timo AI Chat",
+  "app.title": "cowhouse (CW)",
   "menu.chat": "对话",
   "menu.login": "登录",
   "chat.new_chat": "新对话",
