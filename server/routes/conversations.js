@@ -387,6 +387,10 @@ function collectUniqueText(candidates, mode = "any") {
 
 function extractStreamParts(choice, chunk) {
   const delta = choice?.delta || {};
+  const reasoningLikeContent = (value) => {
+    if (!value || typeof value === "string") return undefined;
+    return value;
+  };
 
   const answerText = collectUniqueText(
     [
@@ -405,17 +409,17 @@ function extractStreamParts(choice, chunk) {
 
   const reasoningText = collectUniqueText(
     [
-      delta.content,
+      reasoningLikeContent(delta.content),
       delta.reasoning,
       delta.reasoning_content,
       delta.thinking,
       delta.thinking_content,
-      choice?.message?.content,
+      reasoningLikeContent(choice?.message?.content),
       choice?.message?.reasoning,
       choice?.message?.reasoning_content,
       choice?.message?.thinking,
       choice?.message?.thinking_content,
-      chunk?.content,
+      reasoningLikeContent(chunk?.content),
       chunk?.reasoning,
       chunk?.reasoning_content,
       chunk?.thinking,
@@ -425,6 +429,62 @@ function extractStreamParts(choice, chunk) {
   );
 
   return { answerText, reasoningText };
+}
+
+function splitSseTextChunks(text, maxLength = 96) {
+  const raw = String(text || "");
+  if (!raw) return [];
+  if (raw.length <= maxLength) return [raw];
+
+  const parts = raw.match(/[^。！？!?；;\n]+[。！？!?；;\n]?|.+/g) || [raw];
+  const chunks = [];
+  let buffer = "";
+
+  for (const part of parts) {
+    if (!part) continue;
+    if ((buffer + part).length <= maxLength) {
+      buffer += part;
+      continue;
+    }
+    if (buffer) chunks.push(buffer);
+    if (part.length <= maxLength) {
+      buffer = part;
+      continue;
+    }
+
+    let start = 0;
+    while (start < part.length) {
+      const end = Math.min(start + maxLength, part.length);
+      chunks.push(part.slice(start, end));
+      start = end;
+    }
+    buffer = "";
+  }
+
+  if (buffer) chunks.push(buffer);
+  return chunks;
+}
+
+function emitContentSse(res, content) {
+  const chunks = splitSseTextChunks(content);
+  for (const piece of chunks) {
+    res.write(`data: ${JSON.stringify({ content: piece })}\n\n`);
+  }
+}
+
+function initSse(res) {
+  res.setHeader("Content-Type", "text/event-stream");
+  res.setHeader("Cache-Control", "no-cache");
+  res.setHeader("Connection", "keep-alive");
+  res.setHeader("X-Accel-Buffering", "no");
+  if (typeof res.flushHeaders === "function") {
+    res.flushHeaders();
+  }
+  if (res.socket && typeof res.socket.setNoDelay === "function") {
+    res.socket.setNoDelay(true);
+  }
+  // Keep stream warm to reduce first-chunk buffering on some proxies.
+  res.write(":ok\n\n");
 }
 
 function finalizeSse(res) {
@@ -601,9 +661,7 @@ async function streamWithFallback(uid, model, messages, res, opts = {}) {
                 );
               }
               fullTextContent += emittedText;
-              res.write(
-                `data: ${JSON.stringify({ content: emittedText })}\n\n`
-              );
+              emitContentSse(res, emittedText);
             } else {
               emptyTextChunkCount++;
             }
@@ -644,9 +702,7 @@ async function streamWithFallback(uid, model, messages, res, opts = {}) {
           if (reasoningOpen) {
             const closeThinkingTag = "\n</think>\n";
             fullTextContent += closeThinkingTag;
-            res.write(
-              `data: ${JSON.stringify({ content: closeThinkingTag })}\n\n`
-            );
+            emitContentSse(res, closeThinkingTag);
           }
 
           requestLog.info(
@@ -851,9 +907,7 @@ router.post("/:id/chat", async (req, res) => {
   const generationConfig = normalizeGenerationConfig(req.body);
   const requestedModel = String(model || "").trim();
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
+  initSse(res);
 
   try {
     logger.info(
@@ -962,9 +1016,7 @@ router.post("/:id/regenerate", async (req, res) => {
   const generationConfig = normalizeGenerationConfig(req.body);
   const requestedModel = String(model || "").trim();
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
+  initSse(res);
 
   try {
     logger.info(
@@ -1052,9 +1104,7 @@ router.put("/:id/messages/:msgId", async (req, res) => {
   const generationConfig = normalizeGenerationConfig(req.body);
   const requestedModel = String(model || "").trim();
 
-  res.setHeader("Content-Type", "text/event-stream");
-  res.setHeader("Cache-Control", "no-cache");
-  res.setHeader("Connection", "keep-alive");
+  initSse(res);
 
   try {
     logger.info(

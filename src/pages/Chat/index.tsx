@@ -102,7 +102,45 @@ const extractDisplayContent = (content: string): string => {
 // 检查消息是否包含图片
 const hasImage = (content: string): boolean => content.includes("[IMAGE_DATA:");
 
-const STREAM_FLUSH_INTERVAL = 48;
+const STREAM_FLUSH_INTERVAL = 16;
+const STREAM_SEGMENT_DRAIN_INTERVAL = 22;
+
+const splitIncomingStreamContent = (text: string): string[] => {
+  const raw = String(text || "");
+  if (!raw) return [];
+  if (raw.length <= 140) return [raw];
+
+  const parts = raw.match(/[^。！？!?；;，,\n]+[。！？!?；;，,\n]?|.+/g) || [
+    raw,
+  ];
+  const segments: string[] = [];
+  let buffer = "";
+
+  for (const part of parts) {
+    if (!part) continue;
+    if ((buffer + part).length <= 96) {
+      buffer += part;
+      continue;
+    }
+    if (buffer) segments.push(buffer);
+
+    if (part.length <= 96) {
+      buffer = part;
+      continue;
+    }
+
+    let start = 0;
+    while (start < part.length) {
+      const end = Math.min(start + 96, part.length);
+      segments.push(part.slice(start, end));
+      start = end;
+    }
+    buffer = "";
+  }
+
+  if (buffer) segments.push(buffer);
+  return segments.length ? segments : [raw];
+};
 
 const getResponseErrorMessage = async (response: Response) => {
   try {
@@ -200,6 +238,8 @@ export default () => {
   const streamTargetIndexRef = useRef<number | null>(null);
   const streamFlushTimerRef = useRef<number | null>(null);
   const sseRemainderRef = useRef("");
+  const streamSegmentQueueRef = useRef<string[]>([]);
+  const streamSegmentDrainTimerRef = useRef<number | null>(null);
   const [streamRenderTick, setStreamRenderTick] = useState(0);
 
   // 响应式监听
@@ -314,7 +354,21 @@ export default () => {
       if (streamFlushTimerRef.current !== null) {
         window.clearTimeout(streamFlushTimerRef.current);
       }
+      if (streamSegmentDrainTimerRef.current !== null) {
+        window.clearTimeout(streamSegmentDrainTimerRef.current);
+      }
     };
+  }, []);
+
+  const flushPendingStreamSegmentsNow = useCallback(() => {
+    if (streamSegmentDrainTimerRef.current !== null) {
+      window.clearTimeout(streamSegmentDrainTimerRef.current);
+      streamSegmentDrainTimerRef.current = null;
+    }
+    if (streamSegmentQueueRef.current.length > 0) {
+      streamBufferRef.current += streamSegmentQueueRef.current.join("");
+      streamSegmentQueueRef.current = [];
+    }
   }, []);
 
   useEffect(() => {
@@ -367,23 +421,61 @@ export default () => {
     }, STREAM_FLUSH_INTERVAL);
   }, [flushStreamBuffer]);
 
+  const scheduleSegmentDrain = useCallback(() => {
+    if (streamSegmentDrainTimerRef.current !== null) return;
+
+    const drain = () => {
+      if (streamSegmentQueueRef.current.length === 0) {
+        streamSegmentDrainTimerRef.current = null;
+        return;
+      }
+
+      const piece = streamSegmentQueueRef.current.shift();
+      if (piece) {
+        streamBufferRef.current += piece;
+        scheduleStreamFlush();
+      }
+      streamSegmentDrainTimerRef.current = window.setTimeout(
+        drain,
+        STREAM_SEGMENT_DRAIN_INTERVAL
+      );
+    };
+
+    streamSegmentDrainTimerRef.current = window.setTimeout(drain, 0);
+  }, [scheduleStreamFlush]);
+
   const appendAssistantChunk = useCallback(
     (content?: string, error?: string) => {
       if (content) {
-        streamBufferRef.current += content;
+        const segments = splitIncomingStreamContent(content);
+        if (segments.length <= 1) {
+          streamBufferRef.current += segments[0] || content;
+          scheduleStreamFlush();
+        } else {
+          streamSegmentQueueRef.current.push(...segments);
+          scheduleSegmentDrain();
+        }
       }
       if (error) {
         streamErrorRef.current = error;
+        flushPendingStreamSegmentsNow();
+        flushStreamBuffer();
+        return;
       }
-      scheduleStreamFlush();
     },
-    [scheduleStreamFlush]
+    [
+      flushPendingStreamSegmentsNow,
+      flushStreamBuffer,
+      scheduleSegmentDrain,
+      scheduleStreamFlush,
+    ]
   );
 
   const createAssistantPlaceholder = useCallback(async () => {
     streamBufferRef.current = "";
     streamErrorRef.current = null;
     sseRemainderRef.current = "";
+    flushPendingStreamSegmentsNow();
 
     await new Promise<void>((resolve) => {
       setMessages((prev) => {
@@ -393,7 +485,7 @@ export default () => {
         return [...prev, { role: "assistant", content: "" }];
       });
     });
-  }, []);
+  }, [flushPendingStreamSegmentsNow]);
 
   const replaceAssistantMessage = useCallback(
     (index: number | null, content: string) => {
@@ -630,6 +722,7 @@ export default () => {
           },
         });
       }
+      flushPendingStreamSegmentsNow();
       flushStreamBuffer();
       if (!sawAssistantContent && !sawAssistantError) {
         replaceAssistantMessage(
@@ -649,6 +742,7 @@ export default () => {
         console.error(error);
       }
     } finally {
+      flushPendingStreamSegmentsNow();
       flushStreamBuffer();
       setLoading(false);
       abortControllerRef.current = null;
@@ -824,6 +918,7 @@ export default () => {
           },
         });
       }
+      flushPendingStreamSegmentsNow();
       flushStreamBuffer();
       if (!sawAssistantContent && !sawAssistantError) {
         replaceAssistantMessage(
@@ -843,6 +938,7 @@ export default () => {
         console.error(error);
       }
     } finally {
+      flushPendingStreamSegmentsNow();
       flushStreamBuffer();
       setLoading(false);
       abortControllerRef.current = null;
