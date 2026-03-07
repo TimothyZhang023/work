@@ -293,18 +293,84 @@ function isUnsupportedStreamOptionsError(error) {
   );
 }
 
-function stringifyDeltaText(value) {
-  if (typeof value === "string") return value;
-  if (!Array.isArray(value)) return "";
-  return value
-    .map((part) => {
-      if (typeof part === "string") return part;
-      if (typeof part?.text === "string") return part.text;
-      if (typeof part?.content === "string") return part.content;
-      if (typeof part?.reasoning === "string") return part.reasoning;
-      return "";
-    })
-    .join("");
+function collectTextFragments(value, depth = 0) {
+  if (value === null || value === undefined || depth > 6) return [];
+  if (typeof value === "string") return value ? [value] : [];
+  if (Array.isArray(value)) {
+    return value.flatMap((item) => collectTextFragments(item, depth + 1));
+  }
+  if (typeof value !== "object") return [];
+
+  const obj = value;
+  const directTextKeys = [
+    "text",
+    "content",
+    "reasoning",
+    "reasoning_content",
+    "thinking",
+    "thinking_content",
+    "output_text",
+    "refusal",
+    "value",
+    "delta",
+  ];
+  const nestedKeys = [
+    "message",
+    "parts",
+    "content_block",
+    "summary",
+    "output",
+    "result",
+    "data",
+  ];
+
+  const fragments = [];
+  for (const key of directTextKeys) {
+    if (!(key in obj)) continue;
+    fragments.push(...collectTextFragments(obj[key], depth + 1));
+  }
+  for (const key of nestedKeys) {
+    if (!(key in obj)) continue;
+    fragments.push(...collectTextFragments(obj[key], depth + 1));
+  }
+
+  return fragments;
+}
+
+function extractStreamText(choice, chunk) {
+  const delta = choice?.delta || {};
+  const candidates = [
+    delta.content,
+    delta.text,
+    delta.refusal,
+    delta.reasoning,
+    delta.reasoning_content,
+    delta.thinking,
+    delta.thinking_content,
+    delta.output_text,
+    choice?.message?.content,
+    choice?.message?.reasoning,
+    choice?.message?.reasoning_content,
+    choice?.message?.thinking,
+    choice?.message?.thinking_content,
+    chunk?.content,
+    chunk?.reasoning,
+    chunk?.reasoning_content,
+    chunk?.thinking,
+    chunk?.thinking_content,
+    chunk?.output_text,
+  ];
+
+  const seen = new Set();
+  const parts = [];
+  for (const candidate of candidates) {
+    const text = collectTextFragments(candidate).join("");
+    if (!text || seen.has(text)) continue;
+    seen.add(text);
+    parts.push(text);
+  }
+
+  return parts.join("");
 }
 
 function finalizeSse(res) {
@@ -429,25 +495,25 @@ async function streamWithFallback(uid, model, messages, res, opts = {}) {
           let promptTokens = 0;
           let completionTokens = 0;
           let chunkCount = 0;
+          let emptyTextChunkCount = 0;
           let firstContentAt = null;
           let lastFinishReason = null;
+          const observedDeltaKeys = new Set();
 
           for await (const chunk of stream) {
             chunkCount++;
             const choice = chunk.choices?.[0] || {};
             const delta = choice.delta || {};
+            for (const key of Object.keys(delta)) {
+              observedDeltaKeys.add(key);
+            }
             lastFinishReason = choice.finish_reason || lastFinishReason;
 
             if (chunk?.error?.message) {
               throw new Error(chunk.error.message);
             }
 
-            const deltaContent = stringifyDeltaText(delta.content);
-            const deltaRefusal = stringifyDeltaText(delta.refusal);
-            const deltaReasoning = stringifyDeltaText(
-              delta.reasoning || delta.reasoning_content
-            );
-            const emittedText = deltaContent || deltaRefusal || deltaReasoning;
+            const emittedText = extractStreamText(choice, chunk);
 
             if (emittedText) {
               if (!firstContentAt) {
@@ -465,11 +531,20 @@ async function streamWithFallback(uid, model, messages, res, opts = {}) {
               res.write(
                 `data: ${JSON.stringify({ content: emittedText })}\n\n`
               );
+            } else {
+              emptyTextChunkCount++;
             }
 
             if (delta.tool_calls) {
-              for (const tcDelta of delta.tool_calls) {
-                const idx = tcDelta.index;
+              const toolCallDeltas = Array.isArray(delta.tool_calls)
+                ? delta.tool_calls
+                : [delta.tool_calls];
+              for (const tcDelta of toolCallDeltas) {
+                if (!tcDelta) continue;
+                const idx =
+                  Number.isInteger(tcDelta.index) && Number(tcDelta.index) >= 0
+                    ? Number(tcDelta.index)
+                    : toolCalls.length;
                 if (!toolCalls[idx]) {
                   toolCalls[idx] = {
                     id: tcDelta.id,
@@ -499,10 +574,12 @@ async function streamWithFallback(uid, model, messages, res, opts = {}) {
               baseURL,
               chunkCount,
               contentLength: fullTextContent.length,
+              emptyTextChunkCount,
               toolCallCount: toolCalls.filter(Boolean).length,
               promptTokens,
               completionTokens,
               lastFinishReason,
+              observedDeltaKeys: [...observedDeltaKeys],
             },
             "Upstream stream completed"
           );
