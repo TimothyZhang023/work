@@ -18,6 +18,34 @@ import {
 
 const router = Router();
 
+const SUPPORTED_PROVIDERS = new Set([
+  "openai_compatible",
+  "openai",
+  "gemini",
+  "openrouter",
+]);
+
+const DEFAULT_BASE_URL_BY_PROVIDER = {
+  openai: "https://api.openai.com/v1",
+  gemini: "https://generativelanguage.googleapis.com/v1beta/openai",
+  openrouter: "https://openrouter.ai/api/v1",
+};
+
+function normalizeProvider(provider) {
+  const normalized = String(provider || "openai_compatible").toLowerCase();
+  return SUPPORTED_PROVIDERS.has(normalized)
+    ? normalized
+    : "openai_compatible";
+}
+
+function resolveBaseUrl(provider, baseUrl) {
+  const trimmed = String(baseUrl || "").trim();
+  if (trimmed) {
+    return trimmed;
+  }
+  return DEFAULT_BASE_URL_BY_PROVIDER[provider] || "";
+}
+
 function normalizeBaseUrlCandidates(baseUrl) {
   const trimmed = String(baseUrl || "").replace(/\/+$/, "");
   const candidates = [trimmed];
@@ -33,6 +61,47 @@ function normalizeBaseUrlCandidates(baseUrl) {
 }
 
 async function fetchRemoteModels(endpoint) {
+  if (endpoint.provider === "openrouter") {
+    const baseURL = endpoint.base_url.replace(/\/+$/, "");
+    const response = await fetch(`${baseURL}/models`, {
+      headers: {
+        Authorization: `Bearer ${endpoint.api_key}`,
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`OpenRouter 获取模型失败: HTTP ${response.status}`);
+    }
+    const payload = await response.json();
+    return {
+      models: Array.isArray(payload?.data) ? payload.data : [],
+      baseURL,
+    };
+  }
+
+  if (
+    endpoint.provider === "gemini" &&
+    endpoint.base_url.includes("generativelanguage.googleapis.com") &&
+    !endpoint.base_url.includes("/openai")
+  ) {
+    const baseURL = endpoint.base_url.replace(/\/+$/, "");
+    const separator = baseURL.includes("?") ? "&" : "?";
+    const response = await fetch(
+      `${baseURL}/models${separator}key=${encodeURIComponent(endpoint.api_key)}`
+    );
+    if (!response.ok) {
+      throw new Error(`Gemini 获取模型失败: HTTP ${response.status}`);
+    }
+    const payload = await response.json();
+    return {
+      models: Array.isArray(payload?.models)
+        ? payload.models.map((item) => ({
+            id: String(item.name || "").replace(/^models\//, ""),
+          }))
+        : [],
+      baseURL,
+    };
+  }
+
   const candidates = normalizeBaseUrlCandidates(endpoint.base_url);
   let lastError = null;
 
@@ -97,6 +166,7 @@ router.get("/", (req, res) => {
     const safeGroups = groups.map((g) => ({
       id: g.id,
       name: g.name,
+      provider: g.provider || "openai_compatible",
       base_url: g.base_url,
       is_default: g.is_default,
       use_preset_models: g.use_preset_models,
@@ -127,14 +197,24 @@ router.get("/:id", (req, res) => {
 // 创建 endpoint 组
 router.post("/", (req, res) => {
   try {
-    const { name, base_url, api_key, is_default, use_preset_models } = req.body;
-    if (!name || !base_url || !api_key) {
+    const {
+      name,
+      provider,
+      base_url,
+      api_key,
+      is_default,
+      use_preset_models,
+    } = req.body;
+    const normalizedProvider = normalizeProvider(provider);
+    const resolvedBaseUrl = resolveBaseUrl(normalizedProvider, base_url);
+    if (!name || !resolvedBaseUrl || !api_key) {
       return res.status(400).json({ error: "Missing required fields" });
     }
     const group = createEndpointGroup(
       req.uid,
       name,
-      base_url,
+      normalizedProvider,
+      resolvedBaseUrl,
       api_key,
       is_default,
       use_preset_models
@@ -149,15 +229,18 @@ router.post("/", (req, res) => {
 router.put("/:id", (req, res) => {
   try {
     const { id } = req.params;
-    const { name, base_url, api_key, use_preset_models } = req.body;
-    if (!name || !base_url) {
+    const { name, provider, base_url, api_key, use_preset_models } = req.body;
+    const normalizedProvider = normalizeProvider(provider);
+    const resolvedBaseUrl = resolveBaseUrl(normalizedProvider, base_url);
+    if (!name || !resolvedBaseUrl) {
       return res.status(400).json({ error: "Missing required fields" });
     }
     updateEndpointGroup(
       id,
       req.uid,
       name,
-      base_url,
+      normalizedProvider,
+      resolvedBaseUrl,
       api_key,
       use_preset_models
     );

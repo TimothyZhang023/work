@@ -18,6 +18,7 @@ describe("Database Models - Endpoint Groups", () => {
     const ep1 = createEndpointGroup(
       user.uid,
       "Group 1",
+      "openai",
       "https://api.example.com",
       "key-123",
       true,
@@ -29,12 +30,14 @@ describe("Database Models - Endpoint Groups", () => {
     const groups = getEndpointGroups(user.uid);
     expect(groups).toHaveLength(1);
     expect(groups[0].name).toBe("Group 1");
+    expect(groups[0].provider).toBe("openai");
     expect(groups[0].api_key).toBe("key-123"); // Assert decryption works
 
     updateEndpointGroup(
       ep1.id,
       user.uid,
       "Group 1 Updated",
+      "openrouter",
       "https://api.updated.com",
       "key-456",
       false
@@ -42,6 +45,7 @@ describe("Database Models - Endpoint Groups", () => {
 
     let defaultGroup = getDefaultEndpointGroup(user.uid);
     expect(defaultGroup.name).toBe("Group 1 Updated");
+    expect(defaultGroup.provider).toBe("openrouter");
     expect(defaultGroup.base_url).toBe("https://api.updated.com");
     expect(defaultGroup.api_key).toBe("key-456");
     expect(defaultGroup.use_preset_models).toBe(0);
@@ -49,6 +53,7 @@ describe("Database Models - Endpoint Groups", () => {
     const ep2 = createEndpointGroup(
       user.uid,
       "Group 2",
+      "gemini",
       "https://api2.example.com",
       "key-789",
       true,

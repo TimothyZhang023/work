@@ -52,6 +52,7 @@ db.exec(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     uid TEXT NOT NULL,
     name TEXT NOT NULL,
+    provider TEXT DEFAULT 'openai_compatible',
     base_url TEXT NOT NULL,
     api_key TEXT NOT NULL,
     is_default INTEGER DEFAULT 0,
@@ -156,6 +157,15 @@ db.exec(`
 try {
   db.prepare(
     "ALTER TABLE conversations ADD COLUMN folder_id INTEGER REFERENCES folders(id) ON DELETE SET NULL"
+  ).run();
+} catch (e) {
+  /* column already exists */
+}
+
+// 运行时迁移：添加 provider 列（已存在时忽略）
+try {
+  db.prepare(
+    "ALTER TABLE endpoint_groups ADD COLUMN provider TEXT DEFAULT 'openai_compatible'"
   ).run();
 } catch (e) {
   /* column already exists */
@@ -453,7 +463,7 @@ export function getEndpointGroups(uid) {
   return db
     .prepare(
       `
-    SELECT id, name, base_url, api_key, is_default, use_preset_models, created_at, updated_at
+    SELECT id, name, provider, base_url, api_key, is_default, use_preset_models, created_at, updated_at
     FROM endpoint_groups
     WHERE uid = ?
     ORDER BY is_default DESC, created_at ASC
@@ -462,6 +472,7 @@ export function getEndpointGroups(uid) {
     .all(uid)
     .map((eg) => ({
       ...eg,
+      provider: eg.provider || "openai_compatible",
       api_key: eg.api_key ? decrypt(eg.api_key) : "",
     }));
 }
@@ -470,13 +481,14 @@ export function getDefaultEndpointGroup(uid) {
   const eg = db
     .prepare(
       `
-    SELECT id, name, base_url, api_key, is_default, use_preset_models
+    SELECT id, name, provider, base_url, api_key, is_default, use_preset_models
     FROM endpoint_groups
     WHERE uid = ? AND is_default = 1
   `
     )
     .get(uid);
   if (eg && eg.api_key) eg.api_key = decrypt(eg.api_key);
+  if (eg) eg.provider = eg.provider || "openai_compatible";
   return eg;
 }
 
@@ -484,19 +496,21 @@ export function getEndpointGroup(id, uid) {
   const eg = db
     .prepare(
       `
-    SELECT id, name, base_url, api_key, is_default, use_preset_models, created_at, updated_at
+    SELECT id, name, provider, base_url, api_key, is_default, use_preset_models, created_at, updated_at
     FROM endpoint_groups
     WHERE id = ? AND uid = ?
   `
     )
     .get(id, uid);
   if (eg && eg.api_key) eg.api_key = decrypt(eg.api_key);
+  if (eg) eg.provider = eg.provider || "openai_compatible";
   return eg;
 }
 
 export function createEndpointGroup(
   uid,
   name,
+  provider,
   baseUrl,
   apiKey,
   isDefault = false,
@@ -511,12 +525,13 @@ export function createEndpointGroup(
   const result = db
     .prepare(
       `
-    INSERT INTO endpoint_groups (uid, name, base_url, api_key, is_default, use_preset_models) VALUES (?, ?, ?, ?, ?, ?)
+    INSERT INTO endpoint_groups (uid, name, provider, base_url, api_key, is_default, use_preset_models) VALUES (?, ?, ?, ?, ?, ?, ?)
   `
     )
     .run(
       uid,
       name,
+      provider,
       baseUrl,
       encryptedKey,
       isDefault ? 1 : 0,
@@ -525,6 +540,7 @@ export function createEndpointGroup(
   return {
     id: result.lastInsertRowid,
     name,
+    provider,
     base_url: baseUrl,
     api_key: apiKey,
     is_default: isDefault ? 1 : 0,
@@ -536,6 +552,7 @@ export function updateEndpointGroup(
   id,
   uid,
   name,
+  provider,
   baseUrl,
   apiKey,
   usePresetModels
@@ -543,7 +560,7 @@ export function updateEndpointGroup(
   const existing = db
     .prepare(
       `
-    SELECT api_key, use_preset_models FROM endpoint_groups WHERE id = ? AND uid = ?
+    SELECT api_key, use_preset_models, provider FROM endpoint_groups WHERE id = ? AND uid = ?
   `
     )
     .get(id, uid);
@@ -562,9 +579,17 @@ export function updateEndpointGroup(
 
   db.prepare(
     `
-    UPDATE endpoint_groups SET name = ?, base_url = ?, api_key = ?, use_preset_models = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND uid = ?
+    UPDATE endpoint_groups SET name = ?, provider = ?, base_url = ?, api_key = ?, use_preset_models = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND uid = ?
   `
-  ).run(name, baseUrl, encryptedKey, presetFlag, id, uid);
+  ).run(
+    name,
+    provider || existing.provider || "openai_compatible",
+    baseUrl,
+    encryptedKey,
+    presetFlag,
+    id,
+    uid
+  );
 }
 
 export function setDefaultEndpointGroup(id, uid) {
