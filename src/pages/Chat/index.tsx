@@ -194,6 +194,7 @@ export default () => {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const shouldRefocusInputRef = useRef(false);
   const streamBufferRef = useRef("");
   const streamErrorRef = useRef<string | null>(null);
   const streamTargetIndexRef = useRef<number | null>(null);
@@ -315,6 +316,14 @@ export default () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (loading || !shouldRefocusInputRef.current) return;
+    shouldRefocusInputRef.current = false;
+    window.setTimeout(() => {
+      inputRef.current?.focus();
+    }, 0);
+  }, [loading]);
 
   const flushStreamBuffer = useCallback(() => {
     if (streamFlushTimerRef.current !== null) {
@@ -674,9 +683,12 @@ export default () => {
     }
 
     const userMsg: API.Message = { role: "user", content };
+    const previewsToRevoke = pendingImages.map((p) => p.preview);
+    shouldRefocusInputRef.current = true;
     setMessages((prev) => [...prev, userMsg]);
     setInputText("");
     setPendingImages([]);
+    previewsToRevoke.forEach((preview) => URL.revokeObjectURL(preview));
 
     await streamChat(convId, userMsg, false);
 
@@ -856,8 +868,33 @@ export default () => {
     return false; // 阻止 antd Upload 自动上传
   };
 
+  const handleInputPaste = (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    const items = Array.from(e.clipboardData?.items || []);
+    const imageFiles = items
+      .filter((item) => item.type.startsWith("image/"))
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => Boolean(file));
+
+    if (imageFiles.length === 0) return;
+
+    setPendingImages((prev) => [
+      ...prev,
+      ...imageFiles.map((file) => ({
+        file,
+        preview: URL.createObjectURL(file),
+      })),
+    ]);
+    antdMessage.success(`已粘贴 ${imageFiles.length} 张图片`);
+  };
+
   const handleImageRemove = (index: number) => {
-    setPendingImages((prev) => prev.filter((_, i) => i !== index));
+    setPendingImages((prev) => {
+      const target = prev[index];
+      if (target?.preview) {
+        URL.revokeObjectURL(target.preview);
+      }
+      return prev.filter((_, i) => i !== index);
+    });
   };
 
   const filteredConversations = conversations.filter((c) =>
@@ -1285,6 +1322,7 @@ export default () => {
                   ref={inputRef as any}
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
+                  onPaste={handleInputPaste}
                   onPressEnter={(e) => {
                     if (!e.shiftKey) {
                       e.preventDefault();
