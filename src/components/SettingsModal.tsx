@@ -12,6 +12,7 @@ import {
 import { PlusOutlined, ReloadOutlined } from "@ant-design/icons";
 import {
   ModalForm,
+  ProFormSelect,
   ProFormSwitch,
   ProFormText,
   ProList,
@@ -27,6 +28,20 @@ export const SettingsModal = ({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) => {
+  const providerOptions = [
+    { label: "OpenAI Compatible", value: "openai_compatible" },
+    { label: "OpenAI", value: "openai" },
+    { label: "Gemini", value: "gemini" },
+    { label: "OpenRouter", value: "openrouter" },
+  ];
+
+  const providerBaseUrl: Record<string, string> = {
+    openai_compatible: "",
+    openai: "https://api.openai.com/v1",
+    gemini: "https://generativelanguage.googleapis.com/v1beta/openai",
+    openrouter: "https://openrouter.ai/api/v1",
+  };
+
   const [endpoints, setEndpoints] = useState<API.Endpoint[]>([]);
   const [editingEndpoint, setEditingEndpoint] = useState<API.Endpoint | null>(
     null
@@ -155,6 +170,7 @@ export const SettingsModal = ({
             render: (text, row) => (
               <Space>
                 {text}
+                <Tag>{row.provider || "openai_compatible"}</Tag>
                 {row.is_default && <Tag color="green">默认</Tag>}
               </Space>
             ),
@@ -190,7 +206,7 @@ export const SettingsModal = ({
         title={editingEndpoint?.id ? "编辑 Endpoint" : "添加 Endpoint"}
         open={!!editingEndpoint}
         onOpenChange={(visible) => !visible && setEditingEndpoint(null)}
-        initialValues={editingEndpoint || {}}
+        initialValues={{ provider: "openai_compatible", ...(editingEndpoint || {}) }}
         onFinish={async (values) => {
           try {
             if (editingEndpoint?.id) {
@@ -207,6 +223,13 @@ export const SettingsModal = ({
           }
         }}
       >
+        <ProFormSelect
+          name="provider"
+          label="供应商"
+          options={providerOptions}
+          initialValue="openai_compatible"
+          rules={[{ required: true }]}
+        />
         <ProFormText
           name="name"
           label="名称"
@@ -216,8 +239,7 @@ export const SettingsModal = ({
         <ProFormText
           name="base_url"
           label="Base URL"
-          placeholder="如：https://api.openai.com/v1"
-          rules={[{ required: true }]}
+          placeholder={`如：${providerBaseUrl.openai}（OpenAI）`}
         />
         <ProFormText.Password
           name="api_key"

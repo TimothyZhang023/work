@@ -36,7 +36,7 @@ describe("auth + endpoints", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         name: "OpenAI",
-        base_url: "https://api.openai.com/v1",
+        provider: "openai",
         api_key: "sk-test-secret-key",
         is_default: true,
         use_preset_models: true,
@@ -51,6 +51,8 @@ describe("auth + endpoints", () => {
       .expect(200);
 
     expect(Array.isArray(listRes.body)).toBe(true);
+    expect(listRes.body[0].provider).toBe("openai");
+    expect(listRes.body[0].base_url).toBe("https://api.openai.com/v1");
     expect(listRes.body[0].api_key).toBeUndefined();
     expect(listRes.body[0].api_key_preview).toMatch(/^sk-test-/);
 
@@ -59,6 +61,7 @@ describe("auth + endpoints", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         name: "OpenAI Updated",
+        provider: "openrouter",
         base_url: "https://api.openai.com/v1",
         use_preset_models: false,
       })
@@ -70,6 +73,7 @@ describe("auth + endpoints", () => {
       .expect(200);
 
     expect(singleRes.body.name).toBe("OpenAI Updated");
+    expect(singleRes.body.provider).toBe("openrouter");
     expect(singleRes.body.api_key).toBe("sk-test-secret-key");
     expect(singleRes.body.use_preset_models).toBe(0);
   });
@@ -80,6 +84,7 @@ describe("auth + endpoints", () => {
       .set("Authorization", `Bearer ${authToken}`)
       .send({
         name: "OpenRouter",
+        provider: "openrouter",
         base_url: "https://openrouter.ai/api/v1",
         api_key: "sk-or-test",
         is_default: true,

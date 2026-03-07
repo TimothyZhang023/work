@@ -36,6 +36,7 @@ declare namespace API {
   type Endpoint = {
     id: number;
     name: string;
+    provider?: "openai_compatible" | "openai" | "gemini" | "openrouter";
     base_url: string;
     api_key?: string;
     api_key_preview?: string;
