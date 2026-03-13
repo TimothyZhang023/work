@@ -14,6 +14,7 @@ import {
 import {
   getDefaultMcpTemplate,
   listDefaultMcpTemplates,
+  searchDefaultMcpTemplates,
 } from "../utils/defaultMcpCatalog.js";
 import {
   generateDraftFromMarketMcp,
@@ -23,6 +24,33 @@ import { generateMcpDraft } from "../utils/mcpGenerator.js";
 
 const router = Router();
 router.use(authMiddleware);
+
+const QUICKSTART_BUNDLES = {
+  starter: ["memory", "sequential-thinking"],
+  engineering: ["filesystem", "github", "memory"],
+  data: ["postgres", "memory"],
+};
+
+function validateMcpPayload(payload = {}) {
+  const errors = [];
+  if (!payload.name) {
+    errors.push("name is required");
+  }
+  if (!["stdio", "sse"].includes(payload.type)) {
+    errors.push("type must be stdio or sse");
+  }
+  if (payload.type === "stdio" && !payload.command) {
+    errors.push("command is required when type=stdio");
+  }
+  if (payload.type === "sse" && !payload.url) {
+    errors.push("url is required when type=sse");
+  }
+
+  return {
+    valid: errors.length === 0,
+    errors,
+  };
+}
 
 // 获取用户配置的所有 MCP Server
 router.get("/", (req, res) => {
@@ -46,7 +74,77 @@ router.get("/tools", async (req, res) => {
 
 router.get("/defaults", (req, res) => {
   try {
+    const query = String(req.query?.query || "").trim();
+    if (query) {
+      return res.json(searchDefaultMcpTemplates(query, 12));
+    }
+
     res.json(listDefaultMcpTemplates());
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+router.get("/quickstart/bundles", (req, res) => {
+  res.json(
+    Object.entries(QUICKSTART_BUNDLES).map(([id, templateIds]) => ({
+      id,
+      template_ids: templateIds,
+      templates: templateIds.map((templateId) => getDefaultMcpTemplate(templateId)).filter(Boolean),
+    }))
+  );
+});
+
+router.post("/quickstart/install", (req, res) => {
+  try {
+    const bundleId = String(req.body?.bundle_id || req.body?.bundleId || "starter");
+    const templateIds = QUICKSTART_BUNDLES[bundleId];
+    if (!templateIds) {
+      return res.status(404).json({ error: "Unknown MCP quickstart bundle" });
+    }
+
+    const installed = [];
+    const skipped = [];
+    const existingServers = listMcpServers(req.uid);
+
+    for (const templateId of templateIds) {
+      const template = getDefaultMcpTemplate(templateId);
+      if (!template) continue;
+
+      const duplicated = existingServers.find(
+        (item) => item.name === template.name && item.type === template.type
+      );
+
+      if (duplicated) {
+        skipped.push({ template_id: templateId, reason: "already_installed" });
+        continue;
+      }
+
+      const server = createMcpServer(
+        req.uid,
+        template.name,
+        template.type,
+        template.command,
+        template.args,
+        template.url,
+        template.is_enabled,
+        template.env,
+        template.headers,
+        template.auth
+      );
+
+      installed.push({ template_id: templateId, server });
+    }
+
+    return res.json({ bundle_id: bundleId, installed, skipped });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+router.post("/validate", (req, res) => {
+  try {
+    res.json(validateMcpPayload(req.body || {}));
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

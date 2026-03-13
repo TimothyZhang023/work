@@ -6,12 +6,13 @@ describe("channels endpoints", () => {
   let authToken;
 
   beforeAll(async () => {
+    process.env.STANDALONE_MODE = "false";
     const { createApp } = await import("../server/app.js");
     app = createApp();
 
     const registerRes = await request(app)
       .post("/api/auth/register")
-      .send({ username: `channel_admin_${Date.now()}`, password: "password123" })
+      .send({ username: `ca${Date.now().toString().slice(-6)}`, password: "password123" })
       .expect(200);
 
     authToken = registerRes.body.token;

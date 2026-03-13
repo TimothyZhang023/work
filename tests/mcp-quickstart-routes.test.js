@@ -1,0 +1,55 @@
+import request from "supertest";
+import { beforeAll, describe, expect, it } from "vitest";
+
+describe("mcp quickstart routes", () => {
+  let app;
+  let authToken;
+
+  beforeAll(async () => {
+    process.env.STANDALONE_MODE = "false";
+    const { createApp } = await import("../server/app.js");
+    app = createApp();
+
+    const registerRes = await request(app)
+      .post("/api/auth/register")
+      .send({ username: `mq${Date.now().toString().slice(-6)}`, password: "password123" })
+      .expect(200);
+
+    authToken = registerRes.body.token;
+  });
+
+  it("lists quickstart bundles and installs starter", async () => {
+    const bundlesRes = await request(app)
+      .get("/api/mcp/quickstart/bundles")
+      .set("Authorization", `Bearer ${authToken}`)
+      .expect(200);
+
+    expect(bundlesRes.body.find((item) => item.id === "starter")).toBeTruthy();
+
+    const installRes = await request(app)
+      .post("/api/mcp/quickstart/install")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({ bundle_id: "starter" })
+      .expect(200);
+
+    expect(installRes.body.installed.length).toBeGreaterThan(0);
+  });
+
+  it("validates mcp payload", async () => {
+    const invalidRes = await request(app)
+      .post("/api/mcp/validate")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({ name: "", type: "stdio" })
+      .expect(200);
+
+    expect(invalidRes.body.valid).toBe(false);
+
+    const validRes = await request(app)
+      .post("/api/mcp/validate")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({ name: "x", type: "sse", url: "https://example.com/sse" })
+      .expect(200);
+
+    expect(validRes.body.valid).toBe(true);
+  });
+});
