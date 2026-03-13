@@ -1,6 +1,23 @@
 import { verifyAccessToken } from "../utils/jwt.js";
+import { getOrCreateLocalUser } from "../models/database.js";
+
+function isStandaloneMode() {
+  return process.env.STANDALONE_MODE !== "false";
+}
+
+function applyLocalUser(req) {
+  const localUser = getOrCreateLocalUser();
+  req.uid = localUser.uid;
+  req.user = localUser;
+  req.token = "local-mode-token";
+}
 
 export function authMiddleware(req, res, next) {
+  if (isStandaloneMode()) {
+    applyLocalUser(req);
+    return next();
+  }
+
   const token = req.headers.authorization?.replace("Bearer ", "");
 
   if (!token) {
@@ -19,6 +36,11 @@ export function authMiddleware(req, res, next) {
 }
 
 export function optionalAuth(req, res, next) {
+  if (isStandaloneMode()) {
+    applyLocalUser(req);
+    return next();
+  }
+
   const token = req.headers.authorization?.replace("Bearer ", "");
 
   if (token) {

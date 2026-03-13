@@ -54,14 +54,25 @@
 - 支持 MCP Server 管理
 - 支持本地 `stdio` 类型 MCP
 - 支持远程 `sse` 类型 MCP
+- 支持 Agent Skills 管理与任务挂载
+- 支持 Channel 扩展安装（DingTalk/WeCom/Telegram/Discord）
 
 ### 后端与安全基础
 
 - JWT Access Token + Refresh Token
+- 默认支持单机模式（`STANDALONE_MODE=true`）免登录运行
 - API 速率限制
 - Pino 日志
 - SQLite 默认存储
 - 可切换到 MySQL
+
+## 单机模式（Desktop / Local-first）
+
+- 默认 `STANDALONE_MODE=true`，服务会自动创建本地用户 `local` 并注入鉴权上下文。
+- 若需要恢复传统多用户登录流程，可设置 `STANDALONE_MODE=false`。
+- Channel 扩展 API：
+  - `GET /api/channels/extensions`
+  - `POST /api/channels/extensions/:platform/install`
 
 ## 技术栈
 

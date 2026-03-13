@@ -15,6 +15,7 @@ process.env.REFRESH_SECRET =
   process.env.REFRESH_SECRET || "test-refresh-secret";
 process.env.ENCRYPTION_KEY =
   process.env.ENCRYPTION_KEY || "0123456789abcdef0123456789abcdef";
+process.env.STANDALONE_MODE = "false";
 
 if (fs.existsSync(dbPath)) {
   fs.rmSync(dbPath, { force: true });

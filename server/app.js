@@ -18,6 +18,7 @@ import agentTasksRoutes from "./routes/agentTasks.js";
 import authRoutes from "./routes/auth.js";
 import conversationRoutes from "./routes/conversations.js";
 import cronJobsRoutes from "./routes/cronJobs.js";
+import channelsRoutes from "./routes/channels.js";
 import endpointRoutes from "./routes/endpoints.js";
 import mcpRoutes from "./routes/mcp.js";
 import proxyRoutes from "./routes/proxy.js";
@@ -75,6 +76,7 @@ export function createApp() {
   app.use("/api/skills", skillsRoutes);
   app.use("/api/agent-tasks", agentTasksRoutes);
   app.use("/api/cron-jobs", cronJobsRoutes);
+  app.use("/api/channels", channelsRoutes);
 
   // OpenAI 兼容代理 (/v1)
   app.use("/v1", apiLimiter, proxyRoutes);
