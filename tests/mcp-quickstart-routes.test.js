@@ -52,4 +52,22 @@ describe("mcp quickstart routes", () => {
 
     expect(validRes.body.valid).toBe(true);
   });
+
+  it("enforces mcp payload rules on create endpoint", async () => {
+    const missingCommand = await request(app)
+      .post("/api/mcp")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({ name: "bad-stdio", type: "stdio" })
+      .expect(400);
+
+    expect(missingCommand.body.error).toContain("command is required");
+
+    const missingUrl = await request(app)
+      .post("/api/mcp")
+      .set("Authorization", `Bearer ${authToken}`)
+      .send({ name: "bad-sse", type: "sse" })
+      .expect(400);
+
+    expect(missingUrl.body.error).toContain("url is required");
+  });
 });

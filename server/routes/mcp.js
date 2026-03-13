@@ -134,6 +134,7 @@ router.post("/quickstart/install", (req, res) => {
       );
 
       installed.push({ template_id: templateId, server });
+      existingServers.push(server);
     }
 
     return res.json({ bundle_id: bundleId, installed, skipped });
@@ -278,12 +279,9 @@ router.post("/", (req, res) => {
     const { name, type, command, args, url, is_enabled, env, headers, auth } =
       req.body;
 
-    if (!name || !type) {
-      return res.status(400).json({ error: "Missing required fields" });
-    }
-
-    if (type !== "stdio" && type !== "sse") {
-      return res.status(400).json({ error: "Type must be stdio or sse" });
+    const validation = validateMcpPayload({ name, type, command, url });
+    if (!validation.valid) {
+      return res.status(400).json({ error: validation.errors.join("; ") });
     }
 
     const server = createMcpServer(

@@ -32,7 +32,7 @@ router.get("/settings/global-system-prompt", (req, res) => {
 
 router.put("/settings/global-system-prompt", (req, res) => {
   try {
-    const markdown = String(req.body?.markdown || "").trim();
+    const markdown = String(req.body?.markdown ?? "");
     if (markdown.length > 20000) {
       return res.status(400).json({ error: "markdown too long (max 20000 chars)" });
     }
