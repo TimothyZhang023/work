@@ -1616,6 +1616,21 @@ export function listChannels(uid) {
     }));
 }
 
+export function getChannelById(id, uid) {
+  const channel = db
+    .prepare("SELECT * FROM channels WHERE id = ? AND uid = ?")
+    .get(id, uid);
+
+  if (!channel) {
+    return null;
+  }
+
+  return {
+    ...channel,
+    metadata: channel.metadata ? JSON.parse(channel.metadata) : null,
+  };
+}
+
 export function createChannel(uid, payload) {
   const result = db
     .prepare(
