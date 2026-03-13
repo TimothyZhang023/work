@@ -226,6 +226,18 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+
+  CREATE TABLE IF NOT EXISTS app_settings (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid TEXT NOT NULL,
+    setting_key TEXT NOT NULL,
+    setting_value TEXT,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(uid, setting_key),
+    FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE
+  );
+
   CREATE TABLE IF NOT EXISTS channels (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     uid TEXT NOT NULL,
@@ -251,6 +263,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_task_runs_started_at ON task_runs(started_at);
   CREATE INDEX IF NOT EXISTS idx_task_run_events_run_id ON task_run_events(run_id);
   CREATE INDEX IF NOT EXISTS idx_channels_uid ON channels(uid);
+  CREATE INDEX IF NOT EXISTS idx_app_settings_uid_key ON app_settings(uid, setting_key);
 `);
 
 try {
@@ -354,6 +367,32 @@ export function getUserByUsername(username) {
 
 export function getUserByUid(uid) {
   return db.prepare("SELECT * FROM users WHERE uid = ?").get(uid);
+}
+
+
+export function getAppSetting(uid, key, fallbackValue = "") {
+  const row = db
+    .prepare("SELECT setting_value FROM app_settings WHERE uid = ? AND setting_key = ?")
+    .get(uid, key);
+
+  return row?.setting_value ?? fallbackValue;
+}
+
+export function setAppSetting(uid, key, value) {
+  db.prepare(
+    `
+    INSERT INTO app_settings (uid, setting_key, setting_value)
+    VALUES (?, ?, ?)
+    ON CONFLICT(uid, setting_key)
+    DO UPDATE SET setting_value = excluded.setting_value, updated_at = CURRENT_TIMESTAMP
+  `
+  ).run(uid, key, value);
+
+  return {
+    uid,
+    key,
+    value,
+  };
 }
 
 export function getOrCreateLocalUser() {
@@ -1614,6 +1653,21 @@ export function listChannels(uid) {
       ...channel,
       metadata: channel.metadata ? JSON.parse(channel.metadata) : null,
     }));
+}
+
+export function getChannelById(id, uid) {
+  const channel = db
+    .prepare("SELECT * FROM channels WHERE id = ? AND uid = ?")
+    .get(id, uid);
+
+  if (!channel) {
+    return null;
+  }
+
+  return {
+    ...channel,
+    metadata: channel.metadata ? JSON.parse(channel.metadata) : null,
+  };
 }
 
 export function createChannel(uid, payload) {
