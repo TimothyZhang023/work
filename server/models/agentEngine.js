@@ -8,12 +8,14 @@ import {
   getAgentTask,
   getEndpointGroups,
   getModels,
+  getAppSetting,
   listSkills,
   logUsage,
   updateTaskRun,
   updateConversationSystemPrompt,
 } from "./database.js";
 import { executeMcpTool, getAllAvailableTools } from "./mcpManager.js";
+import { buildTaskSystemPrompt } from "../utils/agentPromptBuilder.js";
 
 const MAX_TURNS = 10;
 const MAX_TOOL_CALLS_PER_SIGNATURE = 2;
@@ -232,17 +234,18 @@ export async function runAgentTask(uid, taskId, options = {}) {
   const allSkills = listSkills(uid);
   const taskSkills = allSkills.filter((s) => task.skill_ids.includes(s.id));
 
-  // Build combined system prompt
-  let systemPrompt = task.system_prompt;
-  if (taskSkills.length > 0) {
-    systemPrompt += "\n\n### Skills & Guidelines:\n";
-    taskSkills.forEach((s) => {
-      systemPrompt += `\n- **${s.name}**: ${s.prompt}`;
-      if (s.examples && s.examples.length > 0) {
-        systemPrompt += `\nExamples:\n${JSON.stringify(s.examples, null, 2)}`;
-      }
-    });
-  }
+  const globalPromptMarkdown = getAppSetting(
+    uid,
+    "global_system_prompt_markdown",
+    process.env.GLOBAL_SYSTEM_PROMPT_MD || ""
+  );
+
+  // Build combined system prompt (task + global markdown extension + skill bundle)
+  const systemPrompt = buildTaskSystemPrompt({
+    taskSystemPrompt: task.system_prompt,
+    taskSkills,
+    globalMarkdown: globalPromptMarkdown,
+  });
 
   // Persist combined system prompt to conversation so chat window sees it
   updateConversationSystemPrompt(conversationId, uid, systemPrompt);

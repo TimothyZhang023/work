@@ -19,10 +19,12 @@ import authRoutes from "./routes/auth.js";
 import conversationRoutes from "./routes/conversations.js";
 import cronJobsRoutes from "./routes/cronJobs.js";
 import channelsRoutes from "./routes/channels.js";
+import channelWebhooksRoutes from "./routes/channelWebhooks.js";
 import endpointRoutes from "./routes/endpoints.js";
 import mcpRoutes from "./routes/mcp.js";
 import proxyRoutes from "./routes/proxy.js";
 import skillsRoutes from "./routes/skills.js";
+import systemRoutes from "./routes/system.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -77,6 +79,8 @@ export function createApp() {
   app.use("/api/agent-tasks", agentTasksRoutes);
   app.use("/api/cron-jobs", cronJobsRoutes);
   app.use("/api/channels", channelsRoutes);
+  app.use("/api/channel-webhooks", channelWebhooksRoutes);
+  app.use("/api/system", systemRoutes);
 
   // OpenAI 兼容代理 (/v1)
   app.use("/v1", apiLimiter, proxyRoutes);

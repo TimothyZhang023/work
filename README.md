@@ -57,6 +57,17 @@
 - 支持 Agent Skills 管理与任务挂载
 - 支持 Channel 扩展安装（DingTalk/WeCom/Telegram/Discord）
 
+
+### 安装与可用性增强（新增）
+
+- Skills 模板：`GET /api/skills/templates`、`POST /api/skills/templates/:templateId/install`
+- Skills 批量导入与校验：`POST /api/skills/import`、`POST /api/skills/validate`
+- MCP Quickstart：`GET /api/mcp/quickstart/bundles`、`POST /api/mcp/quickstart/install`
+- MCP 配置校验：`POST /api/mcp/validate`
+- 系统概览：`GET /api/system/overview`
+- 全局系统提示词 Markdown 配置：`GET /api/system/settings/global-system-prompt`、`PUT /api/system/settings/global-system-prompt`
+- DingTalk 公共 webhook：`POST /api/channel-webhooks/dingtalk/:channelId`
+
 ### 后端与安全基础
 
 - JWT Access Token + Refresh Token
@@ -468,3 +479,8 @@ npm run test:ci
 ## License
 
 MIT
+
+
+## CI / 打包
+
+仓库新增 GitHub Actions：`.github/workflows/ci.yml`，默认执行安装、测试、构建并上传 `dist` 打包产物。部署密钥预留在 `.github/DEPLOY_KEYS.md`。
