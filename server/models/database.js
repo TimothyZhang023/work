@@ -226,6 +226,20 @@ db.exec(`
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
 
+  CREATE TABLE IF NOT EXISTS channels (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uid TEXT NOT NULL,
+    name TEXT NOT NULL,
+    platform TEXT NOT NULL,
+    webhook_url TEXT,
+    bot_token TEXT,
+    metadata TEXT,
+    is_enabled INTEGER DEFAULT 1,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(uid) REFERENCES users(uid) ON DELETE CASCADE
+  );
+
   CREATE INDEX IF NOT EXISTS idx_mcp_servers_uid ON mcp_servers(uid);
   CREATE INDEX IF NOT EXISTS idx_skills_uid ON skills(uid);
   CREATE INDEX IF NOT EXISTS idx_agent_tasks_uid ON agent_tasks(uid);
@@ -236,6 +250,7 @@ db.exec(`
   CREATE INDEX IF NOT EXISTS idx_task_runs_cron_job_id ON task_runs(cron_job_id);
   CREATE INDEX IF NOT EXISTS idx_task_runs_started_at ON task_runs(started_at);
   CREATE INDEX IF NOT EXISTS idx_task_run_events_run_id ON task_run_events(run_id);
+  CREATE INDEX IF NOT EXISTS idx_channels_uid ON channels(uid);
 `);
 
 try {
@@ -300,6 +315,13 @@ try {
   /* column already exists */
 }
 
+try {
+  db.prepare("ALTER TABLE channels ADD COLUMN metadata TEXT").run();
+} catch (e) {
+  /* column already exists */
+}
+
+
 export function hashPassword(password, salt) {
   return crypto.pbkdf2Sync(password, salt, 10000, 64, "sha512").toString("hex");
 }
@@ -332,6 +354,17 @@ export function getUserByUsername(username) {
 
 export function getUserByUid(uid) {
   return db.prepare("SELECT * FROM users WHERE uid = ?").get(uid);
+}
+
+export function getOrCreateLocalUser() {
+  const existing = getUserByUsername("local");
+  if (existing) {
+    return { uid: existing.uid, username: existing.username, role: existing.role };
+  }
+
+  const created = createUser("local", crypto.randomBytes(24).toString("hex"));
+  updateUserRole(created.uid, "admin");
+  return { ...created, role: "admin" };
 }
 
 export function verifyPassword(user, password) {
@@ -1570,6 +1603,69 @@ export function listAllCronJobs() {
 
 export function deleteCronJob(id, uid) {
   db.prepare("DELETE FROM cron_jobs WHERE id = ? AND uid = ?").run(id, uid);
+}
+
+
+export function listChannels(uid) {
+  return db
+    .prepare("SELECT * FROM channels WHERE uid = ? ORDER BY created_at DESC")
+    .all(uid)
+    .map((channel) => ({
+      ...channel,
+      metadata: channel.metadata ? JSON.parse(channel.metadata) : null,
+    }));
+}
+
+export function createChannel(uid, payload) {
+  const result = db
+    .prepare(
+      `
+    INSERT INTO channels (uid, name, platform, webhook_url, bot_token, metadata, is_enabled)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `
+    )
+    .run(
+      uid,
+      payload.name,
+      payload.platform,
+      payload.webhook_url || null,
+      payload.bot_token || null,
+      payload.metadata ? JSON.stringify(payload.metadata) : null,
+      payload.is_enabled ?? 1
+    );
+
+  return {
+    id: result.lastInsertRowid,
+    uid,
+    ...payload,
+  };
+}
+
+export function updateChannel(id, uid, updates) {
+  const fields = [];
+  const values = [];
+  for (const [key, value] of Object.entries(updates)) {
+    if (["name", "platform", "webhook_url", "bot_token", "is_enabled"].includes(key)) {
+      fields.push(`${key} = ?`);
+      values.push(value);
+    }
+    if (key === "metadata") {
+      fields.push("metadata = ?");
+      values.push(value ? JSON.stringify(value) : null);
+    }
+  }
+
+  if (fields.length === 0) return;
+  fields.push("updated_at = CURRENT_TIMESTAMP");
+  values.push(id, uid);
+
+  db.prepare(`UPDATE channels SET ${fields.join(", ")} WHERE id = ? AND uid = ?`).run(
+    ...values
+  );
+}
+
+export function deleteChannel(id, uid) {
+  db.prepare("DELETE FROM channels WHERE id = ? AND uid = ?").run(id, uid);
 }
 
 export default db;

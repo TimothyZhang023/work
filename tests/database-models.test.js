@@ -3,10 +3,14 @@ import {
   createEndpointGroup,
   createUser,
   deleteEndpointGroup,
+  createChannel,
+  deleteChannel,
   getDefaultEndpointGroup,
   getEndpointGroups,
+  listChannels,
   listApiKeys,
   revokeApiKey,
+  updateChannel,
   updateEndpointGroup,
   verifyApiKey,
 } from "../server/models/database.js";
@@ -93,5 +97,33 @@ describe("Database Models - API Keys", () => {
 
     const failVerify = verifyApiKey(newKey.key);
     expect(failVerify).toBeNull();
+  });
+});
+
+describe("Database Models - Channels", () => {
+  it("creates, updates and deletes channels", () => {
+    const user = createUser(`user_${Date.now()}_channel`, "password123");
+
+    const channel = createChannel(user.uid, {
+      name: "Ops Telegram",
+      platform: "telegram",
+      bot_token: "bot-token",
+      metadata: { room: "ops" },
+      is_enabled: 1,
+    });
+
+    expect(channel.id).toBeGreaterThan(0);
+
+    const channels = listChannels(user.uid);
+    expect(channels).toHaveLength(1);
+    expect(channels[0].metadata.room).toBe("ops");
+
+    updateChannel(channel.id, user.uid, { is_enabled: 0, name: "Ops TG" });
+    const updated = listChannels(user.uid)[0];
+    expect(updated.name).toBe("Ops TG");
+    expect(updated.is_enabled).toBe(0);
+
+    deleteChannel(channel.id, user.uid);
+    expect(listChannels(user.uid)).toHaveLength(0);
   });
 });

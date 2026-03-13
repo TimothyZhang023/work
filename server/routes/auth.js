@@ -9,6 +9,7 @@ import {
   getUserByUsername,
   triggerWebhooks,
   verifyPassword,
+  getOrCreateLocalUser,
 } from "../models/database.js";
 import {
   generateAccessToken,
@@ -17,9 +18,22 @@ import {
 } from "../utils/jwt.js";
 
 const router = Router();
+const isStandaloneMode = () => process.env.STANDALONE_MODE !== "false";
+
+function respondWithLocalUser(res) {
+  const user = getOrCreateLocalUser();
+  return res.json({
+    user: { uid: user.uid, username: user.username, role: user.role },
+    token: "local-mode-token",
+    standalone: true,
+  });
+}
 
 // 注册
 router.post("/register", (req, res) => {
+  if (isStandaloneMode()) {
+    return res.status(400).json({ error: "Standalone mode does not require registration" });
+  }
   try {
     const { username, password } = req.body;
 
@@ -69,6 +83,9 @@ router.post("/register", (req, res) => {
 
 // 登录
 router.post("/login", (req, res) => {
+  if (isStandaloneMode()) {
+    return respondWithLocalUser(res);
+  }
   try {
     const { username, password } = req.body;
 
@@ -107,6 +124,9 @@ router.post("/login", (req, res) => {
 
 // 登出
 router.post("/logout", (req, res) => {
+  if (isStandaloneMode()) {
+    return res.json({ success: true, standalone: true });
+  }
   try {
     const refreshToken = req.cookies?.refreshToken;
     if (refreshToken) {
@@ -121,6 +141,9 @@ router.post("/logout", (req, res) => {
 
 // 刷新 Token
 router.post("/refresh", (req, res) => {
+  if (isStandaloneMode()) {
+    return res.json({ token: "local-mode-token", standalone: true });
+  }
   try {
     const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken)
@@ -145,6 +168,10 @@ router.post("/refresh", (req, res) => {
 // 获取当前用户信息
 router.get("/me", authMiddleware, (req, res) => {
   try {
+    if (isStandaloneMode()) {
+      return res.json(req.user);
+    }
+
     const user = getUserByUid(req.uid);
     if (!user) {
       return res.status(401).json({ error: "用户不存在" });
