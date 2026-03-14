@@ -6,9 +6,16 @@ import process from "node:process";
 
 const repoRoot = path.resolve(new URL("..", import.meta.url).pathname);
 const runtimeDir = path.join(repoRoot, "src-tauri", "sidecar-runtime");
-const runtimeNodeSource = path.join(repoRoot, "src-tauri", "sidecar-node", "node");
 const serverEntrySource = path.join(repoRoot, "server.js");
 const serverSourceDir = path.join(repoRoot, "server");
+const isWindows = process.platform === "win32";
+const runtimeNodeFileName = isWindows ? "node.exe" : "node";
+const runtimeNodeSourceCandidates = [
+  process.env.WORKHORSE_NODE_BIN,
+  path.join(repoRoot, "src-tauri", "sidecar-node", runtimeNodeFileName),
+  path.join(repoRoot, "src-tauri", "sidecar-node", "node"),
+  process.execPath,
+].filter(Boolean);
 
 const runtimeDependencyNames = [
   "@modelcontextprotocol/sdk",
@@ -74,8 +81,11 @@ async function copyDirectory(sourceDir, targetDir) {
 }
 
 async function main() {
-  if (!fs.existsSync(runtimeNodeSource)) {
-    throw new Error(`Missing packaged Node runtime: ${runtimeNodeSource}`);
+  const runtimeNodeSource = resolveExistingPath(runtimeNodeSourceCandidates);
+  if (!runtimeNodeSource) {
+    throw new Error(
+      `Missing Node runtime. Checked: ${runtimeNodeSourceCandidates.join(", ")}`
+    );
   }
 
   const npmRootOutput = [];
@@ -133,7 +143,8 @@ async function main() {
   await fsp.rm(runtimeDir, { recursive: true, force: true });
   await fsp.mkdir(runtimeDir, { recursive: true });
 
-  await fsp.copyFile(runtimeNodeSource, path.join(runtimeDir, "node"));
+  const runtimeNodePath = path.join(runtimeDir, runtimeNodeFileName);
+  await fsp.copyFile(runtimeNodeSource, runtimeNodePath);
   await fsp.copyFile(serverEntrySource, path.join(runtimeDir, "server.js"));
   await copyDirectory(serverSourceDir, path.join(runtimeDir, "server"));
 
@@ -150,19 +161,33 @@ async function main() {
     "utf8"
   );
 
-  const wrapperScript = `#!/bin/bash
+  const launcherPath = path.join(
+    runtimeDir,
+    isWindows ? "workhorse-server.cmd" : "workhorse-server"
+  );
+  const wrapperScript = isWindows
+    ? `@echo off
+setlocal
+if "%PORT%"=="" set PORT=12621
+if "%NODE_ENV%"=="" set NODE_ENV=production
+set DIR=%~dp0
+cd /d "%DIR%"
+"%DIR%${runtimeNodeFileName}" "%DIR%server.js" %*
+`
+    : `#!/bin/bash
 set -euo pipefail
 DIR="$( cd "$( dirname "\${BASH_SOURCE[0]}" )" && pwd )"
 export PORT="\${PORT:-12621}"
 export NODE_ENV="\${NODE_ENV:-production}"
 cd "$DIR"
-exec "$DIR/node" "$DIR/server.js" "$@"
+exec "$DIR/${runtimeNodeFileName}" "$DIR/server.js" "$@"
 `;
 
-  const wrapperPath = path.join(runtimeDir, "workhorse-server");
-  await fsp.writeFile(wrapperPath, wrapperScript, "utf8");
-  await fsp.chmod(wrapperPath, 0o755);
-  await fsp.chmod(path.join(runtimeDir, "node"), 0o755);
+  await fsp.writeFile(launcherPath, wrapperScript, "utf8");
+  if (!isWindows) {
+    await fsp.chmod(launcherPath, 0o755);
+    await fsp.chmod(runtimeNodePath, 0o755);
+  }
 
   await runCommand(
     runtimeNodeSource,

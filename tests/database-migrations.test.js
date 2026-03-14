@@ -2,10 +2,14 @@ import fs from "fs";
 import os from "os";
 import path from "path";
 import { execFileSync } from "child_process";
+import { fileURLToPath } from "url";
 import Database from "better-sqlite3";
 import { afterEach, describe, expect, it } from "vitest";
 
 const tempRoots = [];
+const testsDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(testsDir, "..");
+const databaseModulePath = path.join(repoRoot, "server", "models", "database.js");
 
 afterEach(() => {
   while (tempRoots.length > 0) {
@@ -44,11 +48,11 @@ describe("database migrations", () => {
         `process.env.DB_PATH = ${JSON.stringify(
           dbPath
         )}; await import(${JSON.stringify(
-          path.resolve("/Users/zts1993/work/work/server/models/database.js")
+          databaseModulePath
         )});`,
       ],
       {
-        cwd: "/Users/zts1993/work/work",
+        cwd: repoRoot,
         stdio: "pipe",
       }
     );
@@ -98,11 +102,11 @@ describe("database migrations", () => {
         `process.env.DB_PATH = ${JSON.stringify(
           dbPath
         )}; await import(${JSON.stringify(
-          path.resolve("/Users/zts1993/work/work/server/models/database.js")
+          databaseModulePath
         )});`,
       ],
       {
-        cwd: "/Users/zts1993/work/work",
+        cwd: repoRoot,
         stdio: "pipe",
       }
     );

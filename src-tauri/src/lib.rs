@@ -98,7 +98,12 @@ pub fn run() {
       } else {
         let resource_dir = app.path().resource_dir()?;
         let runtime_dir = resource_dir.join("sidecar-runtime");
-        let launcher_path = runtime_dir.join("workhorse-server");
+        let launcher_name = if cfg!(target_os = "windows") {
+          "workhorse-server.cmd"
+        } else {
+          "workhorse-server"
+        };
+        let launcher_path = runtime_dir.join(launcher_name);
         let app_data_dir = app.path().app_data_dir()?;
         fs::create_dir_all(&app_data_dir)?;
 
